@@ -1,77 +1,128 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
-
 @import "tailwindcss";
 
-/* ─── Design Tokens ─────────────────────────────────────── */
-@theme {
-  /* Paleta */
-  --color-navy:       #083A4F;
-  --color-navy-dark:  #052a3a;
-  --color-gold:       #A58D66;
-  --color-gold-light: #c4aa85;
-  --color-gold-dark:  #8a7050;
-  --color-aqua:       #C0D5D6;
-  --color-aqua-dark:  #a8c2c4;
-  --color-teal:       #407E8C;
-  --color-teal-dark:  #2f6070;
-  --color-sand:       #E5E1DD;
-  --color-sand-dark:  #d4cfc9;
+/* ── Paleta de marca (blanco / arena / navy / dorado) ────── */
+@layer base {
+  :root {
+    /* Fondos */
+    --bg:          #FAFAF8;
+    --bg-alt:      #F0EDE8;
+    --bg-sand:     #E5E1DD;
+    --bg-card:     #FFFFFF;
 
-  /* Tipografía */
-  --font-sans:    'Inter', system-ui, sans-serif;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-serif:   'Cormorant Garamond', Georgia, serif;
+    /* Texto */
+    --navy:        #083A4F;
+    --navy-dim:    rgba(8,58,79,0.55);
+    --navy-xdim:   rgba(8,58,79,0.3);
 
-  /* Transiciones */
-  --transition-base: 250ms ease;
+    /* Dorado */
+    --gold:        #A58D66;
+    --gold-bright: #C9A84C;
+    --gold-light:  #D4B07A;
+    --gold-dim:    rgba(165,141,102,0.25);
+
+    /* Complementarios */
+    --teal:        #407E8C;
+    --aqua:        #C0D5D6;
+
+    /* Bordes */
+    --border:      rgba(8,58,79,0.1);
+    --border-gold: rgba(165,141,102,0.3);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: auto; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--navy);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  /* Lenis smooth scroll */
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
 }
 
-/* ─── Base ──────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background-color: #E5E1DD;
-  color: #083A4F;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ── Keyframes ───────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
-img, video { max-width: 100%; display: block; }
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', Georgia, serif;
-  line-height: 1.2;
-  color: #083A4F;
-}
-
-a  { color: inherit; text-decoration: none; }
-ul, ol { list-style: none; padding: 0; margin: 0; }
-button { cursor: pointer; border: none; background: none; font-family: inherit; }
-input, textarea, select { font-family: inherit; }
-
-/* ─── Scrollbar ─────────────────────────────────────────── */
-::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: #E5E1DD; }
-::-webkit-scrollbar-thumb { background: #C0D5D6; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #407E8C; }
-
-/* ─── Animaciones globales ──────────────────────────────── */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+
+@keyframes shimmer-gold {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
 }
 
-.animate-fade-in-up { animation: fadeInUp 0.5s ease both; }
-.skeleton {
-  background: linear-gradient(90deg, #E5E1DD 25%, #d4cfc9 50%, #E5E1DD 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 4px;
+/* ── Utilidades personalizadas ───────────────────────────── */
+@layer utilities {
+  /* Tipografía */
+  .font-serif   { font-family: 'Cormorant Garamond', Georgia, serif; }
+  .font-elegant { font-family: 'Montserrat', Arial, sans-serif; }
+
+  /* Colores brand */
+  .text-navy     { color: var(--navy); }
+  .text-navy-dim { color: var(--navy-dim); }
+  .text-gold     { color: var(--gold); }
+  .text-teal     { color: var(--teal); }
+
+  .bg-brand      { background-color: var(--bg); }
+  .bg-alt        { background-color: var(--bg-alt); }
+  .bg-sand       { background-color: var(--bg-sand); }
+  .bg-navy       { background-color: var(--navy); }
+  .bg-gold       { background-color: var(--gold); }
+  .bg-teal       { background-color: var(--teal); }
+
+  .border-brand  { border-color: var(--border); }
+  .border-gold   { border-color: var(--border-gold); }
+
+  /* Animaciones */
+  .animate-marquee   { animation: marquee 38s linear infinite; }
+  .animate-fade-down { animation: fadeInDown 0.35s ease forwards; }
+
+  /* Texto dorado con shimmer */
+  .text-gold-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--gold) 0%,
+      var(--gold-light) 35%,
+      var(--gold-bright) 50%,
+      var(--gold-light) 65%,
+      var(--gold) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer-gold 4s linear infinite;
+  }
+
+  /* Hover underline dorada */
+  .hover-line {
+    position: relative;
+  }
+  .hover-line::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--gold);
+    transition: width 0.35s ease;
+  }
+  .hover-line:hover::after { width: 100%; }
 }
