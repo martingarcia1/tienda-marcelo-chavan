@@ -8,58 +8,57 @@ export default function HeroSection() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.3 })
 
-      /* Monograma */
+      /* Monograma — entrada con presencia */
       tl.from('.h-mono', {
         opacity: 0,
-        scale: 0.84,
-        duration: 1.3,
+        scale: 0.8,
+        y: 30,
+        duration: 1.5,
         ease: 'power3.out',
       })
-        /* Línea superior */
+        .from('.h-mono-ring', {
+          opacity: 0,
+          scale: 0.7,
+          duration: 1.6,
+          ease: 'power2.out',
+        }, '-=1.2')
         .from('.h-line-top', {
           scaleX: 0,
           duration: 1.1,
           ease: 'power3.inOut',
           transformOrigin: 'left center',
-        }, '-=0.6')
-        /* Nombre principal — revela desde abajo */
+        }, '-=0.8')
         .from('.h-name', {
           y: 90,
           duration: 1.2,
           ease: 'power3.out',
         }, '-=0.7')
-        /* "PLATERÍA" fade + tracking expand */
         .from('.h-plateria', {
           opacity: 0,
-          letterSpacing: '0.7em',
+          letterSpacing: '0.8em',
           duration: 1.0,
           ease: 'power2.out',
         }, '-=0.7')
-        /* Línea inferior */
         .from('.h-line-bottom', {
           scaleX: 0,
           duration: 0.9,
           ease: 'power3.inOut',
           transformOrigin: 'left center',
         }, '-=0.6')
-        /* Subtítulo */
-        .from('.h-sub', {
-          opacity: 0,
-          y: 16,
-          duration: 0.65,
-          ease: 'power2.out',
-        }, '-=0.5')
-        /* CTAs */
-        .from('.h-cta', {
-          opacity: 0,
-          y: 14,
-          stagger: 0.15,
-          duration: 0.55,
-          ease: 'power2.out',
-        }, '-=0.4')
+        .from('.h-sub', { opacity: 0, y: 16, duration: 0.65, ease: 'power2.out' }, '-=0.5')
+        .from('.h-cta', { opacity: 0, y: 14, stagger: 0.15, duration: 0.55, ease: 'power2.out' }, '-=0.4')
         .from('.h-scroll', { opacity: 0, duration: 0.5 }, '-=0.2')
 
-      /* Parallax sutil */
+      /* Brillo pulsante sutil en el monograma */
+      gsap.to('.h-mono-glow', {
+        opacity: 0.5,
+        duration: 2.4,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      })
+
+      /* Parallax */
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: 'top top',
@@ -91,42 +90,66 @@ export default function HeroSection() {
         style={{ borderBottom: '1px solid var(--border-gold)', borderRight: '1px solid var(--border-gold)' }}
       />
 
-      {/* Glows */}
+      {/* Glows de fondo */}
       <div
-        className="absolute top-1/3 right-[10%] w-56 h-56 rounded-full pointer-events-none"
-        style={{ backgroundColor: 'var(--aqua)', filter: 'blur(72px)', opacity: 0.18 }}
+        className="absolute top-1/4 right-[8%] w-72 h-72 rounded-full pointer-events-none"
+        style={{ backgroundColor: 'var(--gold-light)', filter: 'blur(90px)', opacity: 0.16 }}
       />
       <div
-        className="absolute bottom-1/4 right-[28%] w-36 h-36 rounded-full pointer-events-none"
-        style={{ backgroundColor: 'var(--gold-light)', filter: 'blur(52px)', opacity: 0.12 }}
+        className="absolute bottom-1/4 right-[30%] w-44 h-44 rounded-full pointer-events-none"
+        style={{ backgroundColor: 'var(--aqua)', filter: 'blur(64px)', opacity: 0.14 }}
       />
 
       {/* Contenido — alineado a la izquierda */}
-      <div className="h-content relative z-10 w-full px-8 md:px-16 lg:px-24">
+      <div className="h-content relative z-10 w-full px-8 md:px-16 lg:px-24 py-24">
 
-        {/* Monograma — replica el estilo del logo */}
-        <div className="h-mono mb-6 leading-none select-none">
-          {/* M grande con Ch. pequeño superpuesto — como en el logo */}
-          <div className="flex items-end gap-0 leading-none">
+        {/* ── Monograma destacado ── */}
+        <div className="h-mono relative inline-block mb-8 select-none">
+          {/* Glow dorado detrás del monograma */}
+          <div
+            className="h-mono-glow absolute pointer-events-none"
+            style={{
+              inset: '-30%',
+              background: 'radial-gradient(circle at 40% 50%, rgba(201,168,76,0.28) 0%, transparent 65%)',
+              opacity: 0.25,
+              filter: 'blur(12px)',
+            }}
+          />
+          {/* Anillo decorativo */}
+          <div
+            className="h-mono-ring absolute pointer-events-none hidden md:block"
+            style={{
+              width: '190%',
+              height: '135%',
+              top: '-18%',
+              left: '-42%',
+              border: '1px solid rgba(165,141,102,0.22)',
+              borderRadius: '50%',
+              transform: 'rotate(-8deg)',
+            }}
+          />
+          {/* M + CH. con shimmer */}
+          <div className="relative flex items-end leading-none">
             <span
-              className="font-serif"
+              className="font-serif text-gold-shimmer"
               style={{
-                fontSize: 'clamp(4rem, 9vw, 7.5rem)',
-                color: 'var(--gold)',
+                fontSize: 'clamp(5.5rem, 13vw, 11rem)',
                 letterSpacing: '-0.02em',
-                lineHeight: 1,
+                lineHeight: 0.9,
+                filter: 'drop-shadow(0 4px 24px rgba(165,141,102,0.35))',
               }}
             >
               M
             </span>
             <span
-              className="font-serif"
+              className="font-serif text-gold-shimmer"
               style={{
-                fontSize: 'clamp(1.6rem, 3.5vw, 3rem)',
-                color: 'var(--gold)',
+                fontSize: 'clamp(2.2rem, 5vw, 4.4rem)',
                 letterSpacing: '0.05em',
                 lineHeight: 1,
-                marginBottom: '0.15em',
+                marginBottom: '0.12em',
+                marginLeft: '-0.08em',
+                filter: 'drop-shadow(0 3px 16px rgba(165,141,102,0.3))',
               }}
             >
               CH.
@@ -136,45 +159,53 @@ export default function HeroSection() {
 
         {/* Línea superior */}
         <div
-          className="h-line-top w-16 h-px mb-6"
-          style={{ backgroundColor: 'var(--gold)' }}
+          className="h-line-top h-px mb-6"
+          style={{
+            width: '120px',
+            background: 'linear-gradient(90deg, var(--gold) 0%, rgba(165,141,102,0.15) 100%)',
+          }}
         />
 
-        {/* MARCELO CHAVAN — tipografía del logo */}
+        {/* MARCELO CHAVAN */}
         <div className="overflow-hidden">
           <h1
             className="h-name font-serif"
             style={{
-              fontSize: 'clamp(1.6rem, 4.5vw, 3.8rem)',
+              fontSize: 'clamp(1.7rem, 4.8vw, 4.2rem)',
               color: 'var(--gold)',
               letterSpacing: '0.35em',
-              fontWeight: 400,
+              fontWeight: 500,
               lineHeight: 1.1,
+              textShadow: '0 2px 20px rgba(165,141,102,0.25)',
             }}
           >
             MARCELO CHAVAN
           </h1>
         </div>
 
-        {/* PLATERÍA — igual que en el logo */}
+        {/* DESDE 1957 */}
         <p
           className="h-plateria font-elegant"
           style={{
-            fontSize: 'clamp(0.65rem, 1.2vw, 0.95rem)',
-            color: 'var(--navy-dim)',
-            letterSpacing: '0.45em',
-            marginTop: '0.5rem',
+            fontSize: 'clamp(0.7rem, 1.3vw, 1rem)',
+            color: 'var(--navy)',
+            letterSpacing: '0.5em',
+            marginTop: '0.6rem',
             marginBottom: '2rem',
-            fontWeight: 300,
+            fontWeight: 400,
+            opacity: 0.75,
           }}
         >
-          PLATERÍA
+          DESDE 1957
         </p>
 
         {/* Línea inferior */}
         <div
-          className="h-line-bottom w-16 h-px mb-7"
-          style={{ backgroundColor: 'var(--gold)' }}
+          className="h-line-bottom h-px mb-7"
+          style={{
+            width: '120px',
+            background: 'linear-gradient(90deg, var(--gold) 0%, rgba(165,141,102,0.15) 100%)',
+          }}
         />
 
         {/* Subtítulo */}
@@ -188,7 +219,7 @@ export default function HeroSection() {
             marginBottom: '3rem',
           }}
         >
-          Plata 925 &amp; Acero Quirúrgico · Tucumán, Argentina
+          Joyería · Relojería · Platería · Tucumán, Argentina
         </p>
 
         {/* CTAs */}
@@ -196,14 +227,15 @@ export default function HeroSection() {
           <a
             href="#productos"
             onClick={(e) => { e.preventDefault(); document.querySelector('#productos')?.scrollIntoView({ behavior: 'smooth' }) }}
-            className="h-cta font-elegant transition-all duration-300 hover:opacity-85"
+            className="h-cta font-elegant transition-all duration-300 hover:opacity-85 hover:-translate-y-0.5"
             style={{
               padding: '14px 40px',
               fontSize: '0.625rem',
               letterSpacing: '0.35em',
               textTransform: 'uppercase',
-              backgroundColor: 'var(--navy)',
-              color: 'var(--bg-sand)',
+              backgroundColor: 'var(--gold)',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 28px rgba(165,141,102,0.35)',
             }}
           >
             Ver Colección
@@ -211,13 +243,13 @@ export default function HeroSection() {
           <a
             href="#quienes-somos"
             onClick={(e) => { e.preventDefault(); document.querySelector('#quienes-somos')?.scrollIntoView({ behavior: 'smooth' }) }}
-            className="h-cta font-elegant border transition-all duration-300 hover:opacity-70"
+            className="h-cta font-elegant border transition-all duration-300 hover:opacity-70 hover:-translate-y-0.5"
             style={{
               padding: '14px 40px',
               fontSize: '0.625rem',
               letterSpacing: '0.35em',
               textTransform: 'uppercase',
-              borderColor: 'var(--border-gold)',
+              borderColor: 'var(--gold)',
               color: 'var(--navy)',
             }}
           >

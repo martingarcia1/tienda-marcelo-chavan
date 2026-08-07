@@ -1,10 +1,10 @@
 const ITEMS = [
-  '✦ Plata 925 Certificada',
+  '✦ Joyería, Relojería y Platería',
   '✦ Envíos a todo el país',
   '✦ Efectivo: 10% de descuento',
   '✦ 3 Cuotas con Visa, Mastercard y Naranja',
-  '✦ Acero Quirúrgico Premium',
-  '✦ San Miguel de Tucumán · Yerba Buena',
+  '✦ Oro, Plata, Acero y Diamantes',
+  '✦ Desde 1957 · San Miguel de Tucumán',
 ]
 
 export default function AnnouncementBar() {

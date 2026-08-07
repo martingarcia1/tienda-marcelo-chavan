@@ -1,4 +1,4 @@
-import { Globe, MapPin } from 'lucide-react'
+import { Globe, MapPin, Phone } from 'lucide-react'
 import logo from '../../assets/logo.jpg'
 
 export default function Footer() {
@@ -16,14 +16,14 @@ export default function Footer() {
           <div>
             <img
               src={logo}
-              alt="Marcelo Chavan Platería"
+              alt="Marcelo Chavan"
               style={{ width: '140px', height: 'auto', mixBlendMode: 'multiply', marginBottom: '12px' }}
             />
             <p
               className="text-xs leading-loose font-elegant"
               style={{ color: 'var(--navy-dim)' }}
             >
-              Joyería en Plata 925<br />y Acero Quirúrgico.<br />Tucumán, Argentina.
+              Joyería, relojería y platería<br />desde 1957.<br />Tucumán, Argentina.
             </p>
           </div>
 
@@ -67,12 +67,13 @@ export default function Footer() {
             </p>
             <div className="space-y-4">
               {[
-                { city: 'San Miguel de Tucumán', detail: 'Local céntrico' },
-                { city: 'Yerba Buena', detail: 'Local norte' },
-              ].map(({ city, detail }) => (
+                { city: 'Galería Áncel · Local 11', detail: 'Muñecas 132/6 · Sede central', direccion: 'Galería Áncel Local 11, Muñecas 132, San Miguel de Tucumán' },
+                { city: 'Galería Áncel · Local 9', detail: 'Platería Fina', direccion: 'Galería Áncel Local 9, Muñecas 132, San Miguel de Tucumán' },
+                { city: 'Peatonal Mendoza', detail: 'Joyería General · Relojería Japonesa', direccion: 'Peatonal Mendoza, San Miguel de Tucumán' },
+              ].map(({ city, detail, direccion }) => (
                 <a
                   key={city}
-                  href="https://maps.app.goo.gl/82mkmcq633YWZsiq9"
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-start gap-3 hover:opacity-70 transition-opacity"
@@ -90,14 +91,24 @@ export default function Footer() {
               ))}
 
               <a
-                href="https://instagram.com"
+                href="https://instagram.com/joyeriamarcelochavan"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 mt-2 hover:opacity-70 transition-opacity"
               >
                 <Globe size={12} style={{ color: 'var(--gold)', flexShrink: 0 }} />
                 <span className="text-[11px] font-elegant" style={{ color: 'var(--navy-dim)' }}>
-                  @marcelochavan
+                  @joyeriamarcelochavan
+                </span>
+              </a>
+
+              <a
+                href="tel:+543814303839"
+                className="flex items-center gap-3 hover:opacity-70 transition-opacity"
+              >
+                <Phone size={12} style={{ color: 'var(--gold)', flexShrink: 0 }} />
+                <span className="text-[11px] font-elegant" style={{ color: 'var(--navy-dim)' }}>
+                  381 430 3839
                 </span>
               </a>
             </div>
@@ -113,13 +124,13 @@ export default function Footer() {
             className="text-[9px] tracking-widest uppercase font-elegant"
             style={{ color: 'var(--navy-xdim)' }}
           >
-            © {new Date().getFullYear()} Marcelo Chavan Platería · Tucumán, Argentina
+            © {new Date().getFullYear()} Marcelo Chavan · Tucumán, Argentina
           </p>
           <p
             className="text-[9px] tracking-widest font-elegant"
             style={{ color: 'var(--navy-xdim)' }}
           >
-            Plata 925 · Acero Quirúrgico
+            Joyería · Relojería · Platería · Desde 1957
           </p>
         </div>
       </div>

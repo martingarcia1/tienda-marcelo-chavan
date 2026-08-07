@@ -2,38 +2,23 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /* ── Datos ─────────────────────────────────────────────────── */
-const PLATA_CATS = ['Todos', 'Promos', 'Nueva Colección', 'Aros', 'Pulseras', 'Conjuntos', 'Anillos', 'Medallas Religiosas']
-const ACERO_CATS = ['Todos', 'Aros', 'Anillos', 'Pulseras', 'Cadenas']
+const CATS = ['Todos', 'Alianzas', 'Anillos Iniciales', 'Abridores', 'Relojes', 'Plata']
 
-const PLATA_PRODUCTS = [
-  { id: 1,  name: 'Argolla Clásica',        cat: 'Aros',               tag: '' },
-  { id: 2,  name: 'Aro Perla',              cat: 'Aros',               tag: 'Nueva Colección' },
-  { id: 3,  name: 'Aro Corazón',            cat: 'Aros',               tag: '' },
-  { id: 4,  name: 'Aro Mariposa',           cat: 'Aros',               tag: 'Promos' },
-  { id: 5,  name: 'Pulsera Eslabón',        cat: 'Pulseras',           tag: '' },
-  { id: 6,  name: 'Pulsera ID Grabada',     cat: 'Pulseras',           tag: '' },
-  { id: 7,  name: 'Pulsera Corazón',        cat: 'Pulseras',           tag: 'Promos' },
-  { id: 8,  name: 'Pulsera Triple',         cat: 'Pulseras',           tag: 'Nueva Colección' },
-  { id: 9,  name: 'Anillo Solitario',       cat: 'Anillos',            tag: '' },
-  { id: 10, name: 'Anillo Banda Plana',     cat: 'Anillos',            tag: '' },
-  { id: 11, name: 'Anillo Cruz',            cat: 'Anillos',            tag: 'Nueva Colección' },
-  { id: 12, name: 'Conjunto Argollas',      cat: 'Conjuntos',          tag: '' },
-  { id: 13, name: 'Conjunto Perla',         cat: 'Conjuntos',          tag: 'Nueva Colección' },
-  { id: 14, name: 'Medalla Virgen María',   cat: 'Medallas Religiosas',tag: '' },
-  { id: 15, name: 'Medalla San Expedito',   cat: 'Medallas Religiosas',tag: '' },
-  { id: 16, name: 'Medalla Crucifijo',      cat: 'Medallas Religiosas',tag: '' },
-]
-
-const ACERO_PRODUCTS = [
-  { id: 1, name: 'Aro Presión Dorado',   cat: 'Aros',     tag: '' },
-  { id: 2, name: 'Aro Minimalista',      cat: 'Aros',     tag: 'Nueva Colección' },
-  { id: 3, name: 'Aro Gota',             cat: 'Aros',     tag: '' },
-  { id: 4, name: 'Anillo Banda',         cat: 'Anillos',  tag: '' },
-  { id: 5, name: 'Anillo Triángulo',     cat: 'Anillos',  tag: 'Nueva Colección' },
-  { id: 6, name: 'Pulsera Cubana',       cat: 'Pulseras', tag: '' },
-  { id: 7, name: 'Pulsera Rígida',       cat: 'Pulseras', tag: '' },
-  { id: 8, name: 'Cadena Figaro',        cat: 'Cadenas',  tag: 'Nueva Colección' },
-  { id: 9, name: 'Cadena Serpiente',     cat: 'Cadenas',  tag: '' },
+const PRODUCTS = [
+  { id: 1,  name: 'Alianza Clásica',      cat: 'Alianzas',           tag: '' },
+  { id: 2,  name: 'Alianza Diamante',     cat: 'Alianzas',           tag: '' },
+  { id: 3,  name: 'Alianza Oro Blanco',   cat: 'Alianzas',           tag: '' },
+  { id: 4,  name: 'Anillo Inicial A',     cat: 'Anillos Iniciales',  tag: '' },
+  { id: 5,  name: 'Anillo Inicial M',     cat: 'Anillos Iniciales',  tag: '' },
+  { id: 6,  name: 'Anillo Inicial Doble', cat: 'Anillos Iniciales',  tag: '' },
+  { id: 7,  name: 'Abridor Liso',         cat: 'Abridores',          tag: '' },
+  { id: 8,  name: 'Abridor Texturado',    cat: 'Abridores',          tag: '' },
+  { id: 9,  name: 'Abridor Diamante',     cat: 'Abridores',          tag: '' },
+  { id: 10, name: 'Reloj Clásico',        cat: 'Relojes',            tag: '' },
+  { id: 11, name: 'Reloj Deportivo',      cat: 'Relojes',            tag: '' },
+  { id: 12, name: 'Reloj Elegance',       cat: 'Relojes',            tag: '' },
+  { id: 13, name: 'Pulsera Plata',        cat: 'Plata',              tag: '' },
+  { id: 14, name: 'Cadena Plata',         cat: 'Plata',              tag: '' },
 ]
 
 /* ── Sub-componentes ────────────────────────────────────────── */
@@ -150,67 +135,14 @@ function ProductCard({ product, accentColor, delay }) {
   )
 }
 
-function MaterialSection({ title, eyebrow, products, cats, accent, bgColor }) {
+/* ── Sección principal ──────────────────────────────────────── */
+export default function ProductsSection() {
   const [active, setActive] = useState('Todos')
 
   const filtered = active === 'Todos'
-    ? products
-    : products.filter((p) => p.cat === active || p.tag === active)
+    ? PRODUCTS
+    : PRODUCTS.filter((p) => p.cat === active)
 
-  return (
-    <div className="py-20 md:py-28" style={{ backgroundColor: bgColor }}>
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-
-        {/* Header sección */}
-        <motion.div
-          className="mb-12"
-          initial={{ opacity: 0, x: -24 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.65 }}
-        >
-          <p
-            className="text-[8px] tracking-[0.5em] uppercase font-elegant mb-2"
-            style={{ color: accent }}
-          >
-            {eyebrow}
-          </p>
-          <div className="flex items-end gap-6">
-            <h3
-              className="font-serif font-light"
-              style={{
-                fontSize: 'clamp(2rem, 4vw, 3rem)',
-                color: 'var(--navy)',
-                letterSpacing: '0.06em',
-              }}
-            >
-              {title}
-            </h3>
-            <div className="flex-1 h-px mb-3" style={{ backgroundColor: 'var(--border)' }} />
-          </div>
-        </motion.div>
-
-        {/* Filtros */}
-        <CategoryPills cats={cats} active={active} onChange={setActive} accent={accent} />
-
-        {/* Grid de productos */}
-        <motion.div
-          layout
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-5 gap-y-10"
-        >
-          <AnimatePresence mode="popLayout">
-            {filtered.map((p, i) => (
-              <ProductCard key={p.id} product={p} accentColor={accent} delay={i} />
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-    </div>
-  )
-}
-
-/* ── Sección principal ──────────────────────────────────────── */
-export default function ProductsSection() {
   return (
     <section id="productos">
 
@@ -244,29 +176,30 @@ export default function ProductsSection() {
           className="text-xs font-elegant mt-5 max-w-md mx-auto"
           style={{ color: 'var(--navy-dim)' }}
         >
-          Explorá nuestra colección · Seleccioná el material y la categoría
+          Explorá nuestra colección · Seleccioná una categoría
         </p>
       </motion.div>
 
-      {/* Plata 925 */}
-      <MaterialSection
-        title="Plata 925"
-        eyebrow="Material"
-        products={PLATA_PRODUCTS}
-        cats={PLATA_CATS}
-        accent="var(--gold)"
-        bgColor="var(--bg-alt)"
-      />
+      {/* Catálogo */}
+      <div className="py-4 pb-28" style={{ backgroundColor: 'var(--bg-alt)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
 
-      {/* Acero Quirúrgico */}
-      <MaterialSection
-        title="Acero Quirúrgico"
-        eyebrow="Material"
-        products={ACERO_PRODUCTS}
-        cats={ACERO_CATS}
-        accent="var(--teal)"
-        bgColor="var(--bg)"
-      />
+          {/* Filtros */}
+          <CategoryPills cats={CATS} active={active} onChange={setActive} accent="var(--gold)" />
+
+          {/* Grid de productos */}
+          <motion.div
+            layout
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-5 gap-y-10"
+          >
+            <AnimatePresence mode="popLayout">
+              {filtered.map((p, i) => (
+                <ProductCard key={p.id} product={p} accentColor="var(--gold)" delay={i} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </div>
     </section>
   )
 }

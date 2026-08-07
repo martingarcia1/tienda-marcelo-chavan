@@ -1,243 +1,396 @@
 import { motion } from 'framer-motion'
-import { MapPin, Gem, Award, Truck } from 'lucide-react'
+import { MapPin, Gem, Award, Truck, ArrowUpRight } from 'lucide-react'
 import photoFamilia from '../../assets/photo-familia.png'
 import photoPropietaria from '../../assets/photo-propietaria.png'
 
 const HIGHLIGHTS = [
-  { icon: Gem,   title: 'Plata 925',  sub: 'Certificada' },
-  { icon: Award, title: 'Calidad',    sub: 'Piezas únicas' },
-  { icon: MapPin,title: 'San Miguel', sub: 'Tucumán' },
-  { icon: Truck, title: 'Envíos',     sub: 'A todo el país' },
+  { icon: Gem,   title: 'Oro & Plata', sub: 'Alta gama' },
+  { icon: Award, title: 'Desde 1957',  sub: 'Tradición' },
+  { icon: MapPin,title: 'Tucumán',     sub: 'Tres locales' },
+  { icon: Truck, title: 'Envíos',      sub: 'A todo el país' },
 ]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 48 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.25, 0.46, 0.45, 0.94] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.22, 0.61, 0.36, 1] } },
+}
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 1.1, ease: 'easeOut' } },
 }
 
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.11 } },
+  visible: { transition: { staggerChildren: 0.12 } },
 }
 
 export default function AboutSection() {
   return (
     <section
       id="quienes-somos"
-      className="py-28 md:py-36"
-      style={{ backgroundColor: 'var(--bg-alt)' }}
+      className="relative py-28 md:py-40 overflow-hidden"
+      style={{ backgroundColor: 'var(--bg)' }}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
+      {/* Marca de agua tipográfica de fondo */}
+      <div
+        aria-hidden
+        className="absolute pointer-events-none select-none hidden lg:block"
+        style={{
+          top: '4rem',
+          right: '-2rem',
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontSize: '16rem',
+          lineHeight: 1,
+          color: 'rgba(165,141,102,0.05)',
+          fontWeight: 500,
+        }}
+      >
+        MCh.
+      </div>
 
-        {/* ── Encabezado ── */}
+      <div className="max-w-7xl mx-auto px-6 md:px-10 relative">
+
+        {/* ── Encabezado editorial — alineado a la izquierda ── */}
         <motion.div
-          className="text-center mb-20"
+          className="mb-20 md:mb-28"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
           variants={fadeUp}
         >
-          <p
-            className="text-[9px] tracking-[0.5em] uppercase font-elegant mb-4"
-            style={{ color: 'var(--gold)' }}
-          >
-            Nuestra Historia
-          </p>
+          <div className="flex items-center gap-5 mb-6">
+            <span
+              className="font-elegant"
+              style={{ fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'var(--gold)' }}
+            >
+              01 — Nuestra Historia
+            </span>
+            <div className="flex-1 h-px max-w-[200px]" style={{ backgroundColor: 'var(--border-gold)' }} />
+          </div>
           <h2
             className="font-serif font-light"
             style={{
-              fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+              fontSize: 'clamp(2.4rem, 5.5vw, 4.5rem)',
               color: 'var(--navy)',
-              letterSpacing: '0.06em',
+              letterSpacing: '0.04em',
+              lineHeight: 1.05,
             }}
           >
-            Quiénes Somos
+            Quiénes{' '}
+            <em className="text-gold-shimmer" style={{ fontStyle: 'italic' }}>
+              Somos
+            </em>
           </h2>
-          <div className="w-12 h-px mx-auto mt-6" style={{ backgroundColor: 'var(--gold)' }} />
         </motion.div>
 
-        {/* ── Texto (izquierda) + Foto familia (derecha) ── */}
-        <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center mb-20">
+        {/* ── Bloque 1: texto editorial + foto familia ── */}
+        <div className="grid md:grid-cols-12 gap-10 md:gap-8 items-start mb-28 md:mb-36">
 
-          {/* TEXTO — columna izquierda */}
+          {/* TEXTO — 6 columnas izquierda */}
           <motion.div
+            className="md:col-span-6 lg:col-span-5 space-y-8"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
             variants={fadeUp}
-            className="space-y-7"
           >
-            {/* Comilla + cita */}
-            <div>
-              <span
-                className="block font-serif leading-none select-none mb-2"
-                style={{ fontSize: '5rem', color: 'var(--gold-dim)', lineHeight: 0.8 }}
+            {/* Cita grande editorial */}
+            <blockquote
+              className="font-serif font-light"
+              style={{
+                fontSize: 'clamp(1.5rem, 2.8vw, 2.2rem)',
+                color: 'var(--navy)',
+                letterSpacing: '0.01em',
+                lineHeight: 1.4,
+              }}
+            >
+              Cada pieza que creamos nace de una tradición familiar y la pasión por la joyería
+              <span style={{ color: 'var(--gold)' }}> tucumana</span>.
+            </blockquote>
+
+            <div className="w-14 h-px" style={{ backgroundColor: 'var(--gold)' }} />
+
+            <div className="space-y-6">
+              <p
+                className="font-elegant"
+                style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}
               >
-                "
-              </span>
-              <blockquote
-                className="font-serif font-light leading-relaxed"
-                style={{
-                  fontSize: 'clamp(1.35rem, 2.5vw, 1.9rem)',
-                  color: 'var(--navy)',
-                  letterSpacing: '0.02em',
-                }}
+                Somos <strong style={{ color: 'var(--navy)', fontWeight: 500 }}>Marcelo Chavan</strong>, una
+                joyería tucumana con tradición y calidad desde 1957, vinculada a la Familia Siufi. Ofrecemos
+                joyería de alta gama, relojería suiza y japonesa, y platería fina, acompañando a generaciones
+                de familias tucumanas.
+              </p>
+              <p
+                className="font-elegant"
+                style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}
               >
-                Cada pieza que creamos nace del cariño de nuestra familia y la pasión por la platería tucumana.
-              </blockquote>
+                Trabajamos con <strong style={{ color: 'var(--navy)', fontWeight: 500 }}>Oro 18K, Plata y Acero</strong>,{' '}
+                <strong style={{ color: 'var(--navy)', fontWeight: 500 }}>Diamantes</strong>, y marcas exclusivas
+                como Victorinox, TAG Heuer, Longines y Gucci. Joyas con alma y una atención personalizada
+                que marca la diferencia.
+              </p>
             </div>
 
-            <div className="w-10 h-px" style={{ backgroundColor: 'var(--border-gold)' }} />
-
-            <p
-              className="text-sm leading-[2] font-elegant"
-              style={{ color: 'var(--navy-dim)' }}
-            >
-              Somos <strong style={{ color: 'var(--navy)' }}>Marcelo Chavan Platería Fina</strong>, un emprendimiento familiar tucumano nacido de la pasión por la joyería y la platería. Llevamos años diseñando y fabricando piezas únicas que combinan tradición y estilo contemporáneo, con el orgullo de ser 100% argentinos.
-            </p>
-            <p
-              className="text-sm leading-[2] font-elegant"
-              style={{ color: 'var(--navy-dim)' }}
-            >
-              Trabajamos con <strong style={{ color: 'var(--navy)' }}>Plata 925 certificada</strong> y <strong style={{ color: 'var(--navy)' }}>Acero Quirúrgico de alta calidad</strong>, materiales que garantizan durabilidad, elegancia y bienestar en cada uso. Cada pieza que sale de nuestro taller está pensada para perdurar en el tiempo.
-            </p>
-
-            {/* Formas de pago */}
-            <div
-              className="p-5 border"
-              style={{ borderColor: 'var(--border-gold)', backgroundColor: 'rgba(165,141,102,0.04)' }}
-            >
+            {/* Firma decorativa */}
+            <div className="pt-2">
               <p
-                className="text-[8px] tracking-[0.45em] uppercase font-elegant mb-3"
-                style={{ color: 'var(--gold)' }}
+                className="font-serif"
+                style={{
+                  fontSize: '1.6rem',
+                  color: 'var(--gold)',
+                  fontStyle: 'italic',
+                  letterSpacing: '0.06em',
+                }}
               >
-                Formas de Pago
+                Familia Siufi
               </p>
-              <div className="space-y-2">
-                {[
-                  ['Efectivo', '10% de descuento'],
-                  ['Transferencia', 'Precio de lista'],
-                  ['3 Cuotas', 'Visa · Mastercard · Naranja · Amex'],
-                ].map(([m, d]) => (
-                  <div key={m} className="flex justify-between items-baseline">
-                    <span className="text-xs font-elegant" style={{ color: 'var(--navy)' }}>{m}</span>
-                    <span className="text-[10px] font-elegant" style={{ color: 'var(--navy-dim)' }}>{d}</span>
-                  </div>
-                ))}
-              </div>
+              <p
+                className="font-elegant mt-1"
+                style={{ fontSize: '0.55rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--navy-xdim)' }}
+              >
+                Tradición desde 1957
+              </p>
             </div>
           </motion.div>
 
-          {/* FOTO FAMILIA — columna derecha */}
+          {/* FOTO FAMILIA — 6 columnas derecha, con offset editorial */}
           <motion.div
+            className="md:col-span-6 lg:col-span-6 lg:col-start-7 relative"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
-            variants={{
-              hidden: { opacity: 0, y: 48 },
-              visible: { opacity: 1, y: 0, transition: { delay: 0.18, duration: 0.85, ease: [0.25, 0.46, 0.45, 0.94] } },
-            }}
-            className="relative"
+            variants={fadeIn}
           >
+            {/* Marco desplazado */}
             <div
-              className="absolute -top-3 -right-3 w-full h-full pointer-events-none"
-              style={{ border: '1px solid var(--border-gold)' }}
+              className="absolute pointer-events-none"
+              style={{
+                top: '20px', left: '20px', right: '-20px', bottom: '-20px',
+                border: '1px solid var(--border-gold)',
+              }}
+            />
+            {/* Panel de color detrás */}
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                top: '40px', left: '-24px', width: '45%', bottom: '-40px',
+                backgroundColor: 'var(--bg-sand)', zIndex: -1,
+              }}
             />
             <img
               src={photoFamilia}
-              alt="Familia Marcelo Chavan Platería"
+              alt="Familia Marcelo Chavan"
               className="relative w-full object-cover"
-              style={{ aspectRatio: '3/4', objectPosition: 'center top' }}
+              style={{
+                aspectRatio: '4/5',
+                objectPosition: 'center top',
+                boxShadow: '0 30px 80px rgba(8,58,79,0.14)',
+              }}
             />
+            {/* Caption flotante */}
+            <div
+              className="absolute -bottom-5 left-6 px-6 py-4"
+              style={{
+                backgroundColor: 'var(--bg)',
+                boxShadow: '0 12px 40px rgba(8,58,79,0.12)',
+                borderLeft: '2px solid var(--gold)',
+              }}
+            >
+              <p
+                className="font-elegant"
+                style={{ fontSize: '0.55rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gold)' }}
+              >
+                La Familia Chavan
+              </p>
+              <p className="font-serif mt-1" style={{ fontSize: '0.95rem', color: 'var(--navy)', fontStyle: 'italic' }}>
+                Tucumán, Argentina
+              </p>
+            </div>
           </motion.div>
         </div>
 
-        {/* ── Locales — Texto (izquierda) + Foto propietaria (derecha) ── */}
-        <motion.div
-          className="grid md:grid-cols-2 gap-10 md:gap-16 items-center mb-20"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.14 } } }}
-        >
+        {/* ── Bloque 2: locales — foto izquierda, texto derecha (editorial alternado) ── */}
+        <div className="grid md:grid-cols-12 gap-10 md:gap-8 items-center mb-28 md:mb-36">
+
           {/* TEXTO LOCALES — izquierda */}
-          <motion.div variants={fadeUp} className="space-y-6">
-            <p
-              className="text-[9px] tracking-[0.5em] uppercase font-elegant"
-              style={{ color: 'var(--gold)' }}
-            >
-              Nuestros Locales
-            </p>
+          <motion.div
+            className="md:col-span-6 lg:col-span-5 space-y-8 order-1"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={fadeUp}
+          >
+            <div className="flex items-center gap-5">
+              <span
+                className="font-elegant"
+                style={{ fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'var(--gold)' }}
+              >
+                02 — Nuestros Locales
+              </span>
+              <div className="flex-1 h-px max-w-[120px]" style={{ backgroundColor: 'var(--border-gold)' }} />
+            </div>
+
             <h3
               className="font-serif font-light"
               style={{
-                fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)',
+                fontSize: 'clamp(1.9rem, 3.8vw, 3rem)',
                 color: 'var(--navy)',
-                letterSpacing: '0.04em',
+                letterSpacing: '0.03em',
+                lineHeight: 1.2,
               }}
             >
-              Dos locales en Tucumán para estar más cerca tuyo
+              Nuestros espacios{' '}
+              <em style={{ color: 'var(--gold)', fontStyle: 'italic' }}>en Tucumán</em>
             </h3>
-            <div className="w-10 h-px" style={{ backgroundColor: 'var(--gold)' }} />
+
             <p
-              className="text-sm leading-[2] font-elegant"
-              style={{ color: 'var(--navy-dim)' }}
+              className="font-elegant"
+              style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}
             >
-              Podés encontrar toda nuestra colección de joyas en plata y acero en nuestros dos locales en Tucumán. Ambos espacios están pensados para brindarte una experiencia de compra cálida y personalizada, donde podés ver, tocar y elegir la pieza perfecta.
+              Encontrá joyería de alta gama, relojería suiza y japonesa, y platería fina en nuestros locales
+              en pleno centro de San Miguel de Tucumán. Cada espacio está pensado para brindarte una
+              experiencia de compra cálida y personalizada, donde podés ver, tocar y elegir la pieza perfecta.
             </p>
 
-            <div className="space-y-4 mt-2">
+            {/* Cards de locales refinadas */}
+            <div className="space-y-3">
               {[
-                { ciudad: 'San Miguel de Tucumán', detalle: 'Local céntrico' },
-                { ciudad: 'Yerba Buena', detalle: 'Local norte' },
-              ].map(({ ciudad, detalle }) => (
-                <div
+                { ciudad: 'Galería Áncel · Local 11', detalle: 'Muñecas 132/6 · Sede central', num: 'I', direccion: 'Galería Áncel Local 11, Muñecas 132, San Miguel de Tucumán' },
+                { ciudad: 'Galería Áncel · Local 9', detalle: 'Platería Fina', num: 'II', direccion: 'Galería Áncel Local 9, Muñecas 132, San Miguel de Tucumán' },
+                { ciudad: 'Peatonal Mendoza', detalle: 'Joyería General · Relojería Japonesa', num: 'III', direccion: 'Peatonal Mendoza, San Miguel de Tucumán' },
+              ].map(({ ciudad, detalle, num, direccion }) => (
+                <a
                   key={ciudad}
-                  className="flex items-start gap-4 p-4 border"
-                  style={{ borderColor: 'var(--border-gold)' }}
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-5 p-5 transition-all duration-400"
+                  style={{
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 4px 20px rgba(8,58,79,0.05)',
+                  }}
                 >
-                  <MapPin size={16} style={{ color: 'var(--gold)', flexShrink: 0, marginTop: 2 }} />
-                  <div>
-                    <p className="text-xs tracking-widest uppercase font-elegant" style={{ color: 'var(--navy)' }}>
+                  <span
+                    className="font-serif flex-shrink-0"
+                    style={{ fontSize: '1.5rem', color: 'var(--gold)', fontStyle: 'italic', width: '28px' }}
+                  >
+                    {num}
+                  </span>
+                  <div className="flex-1">
+                    <p
+                      className="font-elegant"
+                      style={{ fontSize: '0.7rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--navy)', fontWeight: 500 }}
+                    >
                       {ciudad}
                     </p>
-                    <p className="text-[10px] font-elegant mt-0.5" style={{ color: 'var(--navy-dim)' }}>
+                    <p className="font-elegant mt-0.5" style={{ fontSize: '0.65rem', color: 'var(--navy-dim)' }}>
                       {detalle}
                     </p>
                   </div>
-                </div>
+                  <ArrowUpRight
+                    size={16}
+                    className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    style={{ color: 'var(--gold)' }}
+                  />
+                </a>
               ))}
             </div>
-
-            <a
-              href="https://maps.app.goo.gl/82mkmcq633YWZsiq9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase font-elegant hover:opacity-70 transition-opacity"
-              style={{ color: 'var(--teal)' }}
-            >
-              Ver en Google Maps →
-            </a>
           </motion.div>
 
           {/* FOTO PROPIETARIA — derecha */}
-          <motion.div variants={fadeUp} className="relative">
+          <motion.div
+            className="md:col-span-6 lg:col-span-6 lg:col-start-7 relative order-2"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={fadeIn}
+          >
             <div
-              className="absolute -bottom-3 -right-3 w-full h-full pointer-events-none"
-              style={{ border: '1px solid var(--border-gold)' }}
+              className="absolute pointer-events-none"
+              style={{
+                top: '-20px', right: '-20px', left: '20px', bottom: '20px',
+                border: '1px solid var(--border-gold)',
+              }}
             />
             <img
               src={photoPropietaria}
-              alt="Propietaria de locales Marcelo Chavan"
+              alt="Propietaria de los locales Marcelo Chavan"
               className="relative w-full object-cover"
-              style={{ aspectRatio: '9/16', objectPosition: 'center top', maxHeight: '800px' }}
+              style={{
+                aspectRatio: '4/5',
+                objectPosition: 'center 20%',
+                boxShadow: '0 30px 80px rgba(8,58,79,0.14)',
+              }}
             />
+            <div
+              className="absolute -bottom-5 right-6 px-6 py-4 text-right"
+              style={{
+                backgroundColor: 'var(--bg)',
+                boxShadow: '0 12px 40px rgba(8,58,79,0.12)',
+                borderRight: '2px solid var(--gold)',
+              }}
+            >
+              <p
+                className="font-elegant"
+                style={{ fontSize: '0.55rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gold)' }}
+              >
+                Nuestros locales
+              </p>
+              <p className="font-serif mt-1" style={{ fontSize: '0.95rem', color: 'var(--navy)', fontStyle: 'italic' }}>
+                San Miguel de Tucumán, Argentina
+              </p>
+            </div>
           </motion.div>
+        </div>
+
+        {/* ── Formas de pago — banda elegante ── */}
+        <motion.div
+          className="mb-24 md:mb-28"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={fadeUp}
+        >
+          <div
+            className="grid md:grid-cols-3"
+            style={{ border: '1px solid var(--border-gold)' }}
+          >
+            {[
+              { title: 'Efectivo', detail: '10% de descuento', accent: true },
+              { title: 'Transferencia', detail: 'Precio de lista', accent: false },
+              { title: '3 Cuotas sin sorpresas', detail: 'Visa · Mastercard · Naranja · Amex', accent: false },
+            ].map(({ title, detail, accent }, i) => (
+              <div
+                key={title}
+                className="py-8 px-8 text-center"
+                style={{
+                  backgroundColor: accent ? 'rgba(165,141,102,0.07)' : 'transparent',
+                  borderLeft: i > 0 ? '1px solid var(--border-gold)' : 'none',
+                }}
+              >
+                <p
+                  className="font-serif mb-1.5"
+                  style={{ fontSize: '1.25rem', color: 'var(--navy)', fontStyle: 'italic' }}
+                >
+                  {title}
+                </p>
+                <p
+                  className="font-elegant"
+                  style={{ fontSize: '0.6rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: accent ? 'var(--gold)' : 'var(--navy-dim)' }}
+                >
+                  {detail}
+                </p>
+              </div>
+            ))}
+          </div>
         </motion.div>
 
-        {/* ── Highlights ── */}
+        {/* ── Highlights minimalistas ── */}
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 md:grid-cols-4 gap-px"
+          style={{ backgroundColor: 'var(--border)' }}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
@@ -247,19 +400,21 @@ export default function AboutSection() {
             <motion.div
               key={title}
               variants={fadeUp}
-              className="text-center py-8 px-4 border"
-              style={{
-                borderColor: 'var(--border)',
-                backgroundColor: 'var(--bg-card)',
-                transition: 'border-color 0.3s ease',
-              }}
-              whileHover={{ borderColor: 'var(--gold)' }}
+              className="group text-center py-10 px-4 transition-colors duration-500"
+              style={{ backgroundColor: 'var(--bg)' }}
             >
-              <Icon size={18} className="mx-auto mb-4" style={{ color: 'var(--gold)' }} />
-              <p className="text-[10px] tracking-[0.35em] uppercase font-elegant mb-1" style={{ color: 'var(--navy)' }}>
+              <Icon
+                size={19}
+                className="mx-auto mb-4 transition-transform duration-500 group-hover:scale-110"
+                style={{ color: 'var(--gold)' }}
+              />
+              <p
+                className="font-elegant mb-1"
+                style={{ fontSize: '0.62rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'var(--navy)', fontWeight: 500 }}
+              >
                 {title}
               </p>
-              <p className="text-[10px] font-elegant" style={{ color: 'var(--navy-dim)' }}>
+              <p className="font-elegant" style={{ fontSize: '0.62rem', color: 'var(--navy-dim)' }}>
                 {sub}
               </p>
             </motion.div>

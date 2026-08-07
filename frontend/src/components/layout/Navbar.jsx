@@ -43,7 +43,7 @@ export default function Navbar() {
         >
           <img
             src={logo}
-            alt="Marcelo Chavan Platería"
+            alt="Marcelo Chavan"
             style={{
               height: '44px',
               width: 'auto',
