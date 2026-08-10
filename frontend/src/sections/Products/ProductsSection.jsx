@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { whatsappHref } from '../../components/WhatsAppButton'
 
 /* ── Datos ─────────────────────────────────────────────────── */
 const CATS = ['Todos', 'Alianzas', 'Anillos Iniciales', 'Abridores', 'Relojes', 'Plata']
@@ -51,7 +52,7 @@ function ProductCard({ product, accentColor, delay }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ delay: delay * 0.06, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="group cursor-pointer"
+      className="group"
     >
       {/* Imagen placeholder */}
       <div
@@ -87,17 +88,21 @@ function ProductCard({ product, accentColor, delay }) {
           </div>
         )}
 
-        {/* Overlay hover */}
+        {/* Overlay hover — consulta por WhatsApp */}
         <div
           className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400"
           style={{ backgroundColor: 'rgba(8,58,79,0.08)' }}
         >
-          <span
-            className="text-[9px] tracking-[0.4em] uppercase font-elegant px-4 py-2 border"
+          <a
+            href={whatsappHref(`Hola! Quiero consultar por ${product.name}.`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-[9px] tracking-[0.4em] uppercase font-elegant px-4 py-2 border transition-opacity hover:opacity-70"
             style={{ color: 'var(--navy)', borderColor: 'var(--border-gold)', backgroundColor: 'rgba(250,250,248,0.85)' }}
           >
-            Ver más
-          </span>
+            Consultar
+          </a>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap, ScrollTrigger } from '../../lib/gsap'
+import heroVideo from '../../assets/WhatsApp Video 2026-08-10 at 11.57.44.mp4'
 
 export default function HeroSection() {
   const containerRef = useRef(null)
@@ -80,6 +81,21 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center overflow-hidden"
       style={{ backgroundColor: 'var(--bg-alt)' }}
     >
+      {/* Video de fondo */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        src={heroVideo}
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+      {/* Velo translúcido para mantener legible el contenido */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ backgroundColor: 'var(--bg-alt)', opacity: 0.100 }}
+      />
+
       {/* Esquinas decorativas */}
       <div
         className="absolute top-0 left-0 w-28 h-28 pointer-events-none"
@@ -258,7 +274,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator
       <div
         className="h-scroll absolute bottom-8 left-8 md:left-16 lg:left-24 flex flex-col items-start gap-3"
         style={{ opacity: 0.4 }}
@@ -267,14 +283,14 @@ export default function HeroSection() {
           className="font-elegant"
           style={{ fontSize: '0.5rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'var(--navy)' }}
         >
-          Scroll
+
         </span>
         <div className="flex flex-col gap-1">
           {[0, 1, 2].map((i) => (
             <div key={i} className="w-px h-3" style={{ backgroundColor: 'var(--gold)', opacity: 1 - i * 0.3 }} />
           ))}
         </div>
-      </div>
+      </div> */}
     </section>
   )
 }

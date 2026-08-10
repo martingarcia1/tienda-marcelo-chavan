@@ -4,10 +4,10 @@ import photoFamilia from '../../assets/photo-familia.png'
 import photoPropietaria from '../../assets/photo-propietaria.png'
 
 const HIGHLIGHTS = [
-  { icon: Gem,   title: 'Oro & Plata', sub: 'Alta gama' },
-  { icon: Award, title: 'Desde 1957',  sub: 'Tradición' },
-  { icon: MapPin,title: 'Tucumán',     sub: 'Tres locales' },
-  { icon: Truck, title: 'Envíos',      sub: 'A todo el país' },
+  { icon: Gem, title: 'Oro & Plata', sub: 'Alta gama' },
+  { icon: Award, title: 'Desde 1957', sub: 'Tradición' },
+  { icon: MapPin, title: 'Tucumán', sub: 'Tres locales' },
+  { icon: Truck, title: 'Envíos', sub: 'A todo el país' },
 ]
 
 const fadeUp = {
@@ -201,7 +201,7 @@ export default function AboutSection() {
                 className="font-elegant"
                 style={{ fontSize: '0.55rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gold)' }}
               >
-                La Familia Chavan
+                La Familia Siufi
               </p>
               <p className="font-serif mt-1" style={{ fontSize: '0.95rem', color: 'var(--navy)', fontStyle: 'italic' }}>
                 Tucumán, Argentina

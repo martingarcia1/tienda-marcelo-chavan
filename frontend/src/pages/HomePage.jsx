@@ -4,6 +4,7 @@ import HeroSection from '../sections/Hero/HeroSection'
 import AboutSection from '../sections/About/AboutSection'
 import ProductsSection from '../sections/Products/ProductsSection'
 import Footer from '../components/layout/Footer'
+import WhatsAppButton from '../components/WhatsAppButton'
 
 export default function HomePage() {
   return (
@@ -21,6 +22,7 @@ export default function HomePage() {
       </main>
 
       <Footer />
+      <WhatsAppButton />
     </>
   )
 }
