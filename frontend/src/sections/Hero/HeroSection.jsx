@@ -81,9 +81,9 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center overflow-hidden"
       style={{ backgroundColor: 'var(--bg-alt)' }}
     >
-      {/* Video de fondo */}
+      {/* Video de fondo — en mobile se ve completo (contain) para no recortar tanto un video horizontal en pantallas angostas; en desktop cubre todo el hero */}
       <video
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        className="absolute inset-0 w-full h-full object-contain md:object-cover pointer-events-none"
         src={heroVideo}
         autoPlay
         loop

@@ -1,25 +1,33 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { whatsappHref } from '../../components/WhatsAppButton'
+import alianzaClasica from '../../assets/products/alianza-clasica.jpg'
+import alianzaDiamante from '../../assets/products/alianza-diamante.jpg'
+import alianzaOroBlanco from '../../assets/products/alianza-oro-blanco.jpg'
+import abridorLiso from '../../assets/products/abridor-liso.jpg'
+import abridorTexturado from '../../assets/products/abridor-texturado.jpg'
+import abridorDiamante from '../../assets/products/abridor-diamante.jpg'
+import pulseraPlata from '../../assets/products/pulsera-plata.jpg'
+import cadenaPlata from '../../assets/products/cadena-plata.jpg'
 
 /* ── Datos ─────────────────────────────────────────────────── */
 const CATS = ['Todos', 'Alianzas', 'Anillos Iniciales', 'Abridores', 'Relojes', 'Plata']
 
 const PRODUCTS = [
-  { id: 1,  name: 'Alianza Clásica',      cat: 'Alianzas',           tag: '' },
-  { id: 2,  name: 'Alianza Diamante',     cat: 'Alianzas',           tag: '' },
-  { id: 3,  name: 'Alianza Oro Blanco',   cat: 'Alianzas',           tag: '' },
+  { id: 1,  name: 'Alianza Clásica',      cat: 'Alianzas',           tag: '', img: alianzaClasica },
+  { id: 2,  name: 'Alianza Diamante',     cat: 'Alianzas',           tag: '', img: alianzaDiamante },
+  { id: 3,  name: 'Alianza Oro Blanco',   cat: 'Alianzas',           tag: '', img: alianzaOroBlanco },
   { id: 4,  name: 'Anillo Inicial A',     cat: 'Anillos Iniciales',  tag: '' },
   { id: 5,  name: 'Anillo Inicial M',     cat: 'Anillos Iniciales',  tag: '' },
   { id: 6,  name: 'Anillo Inicial Doble', cat: 'Anillos Iniciales',  tag: '' },
-  { id: 7,  name: 'Abridor Liso',         cat: 'Abridores',          tag: '' },
-  { id: 8,  name: 'Abridor Texturado',    cat: 'Abridores',          tag: '' },
-  { id: 9,  name: 'Abridor Diamante',     cat: 'Abridores',          tag: '' },
+  { id: 7,  name: 'Abridor Liso',         cat: 'Abridores',          tag: '', img: abridorLiso },
+  { id: 8,  name: 'Abridor Texturado',    cat: 'Abridores',          tag: '', img: abridorTexturado },
+  { id: 9,  name: 'Abridor Diamante',     cat: 'Abridores',          tag: '', img: abridorDiamante },
   { id: 10, name: 'Reloj Clásico',        cat: 'Relojes',            tag: '' },
   { id: 11, name: 'Reloj Deportivo',      cat: 'Relojes',            tag: '' },
   { id: 12, name: 'Reloj Elegance',       cat: 'Relojes',            tag: '' },
-  { id: 13, name: 'Pulsera Plata',        cat: 'Plata',              tag: '' },
-  { id: 14, name: 'Cadena Plata',         cat: 'Plata',              tag: '' },
+  { id: 13, name: 'Pulsera Plata',        cat: 'Plata',              tag: '', img: pulseraPlata },
+  { id: 14, name: 'Cadena Plata',         cat: 'Plata',              tag: '', img: cadenaPlata },
 ]
 
 /* ── Sub-componentes ────────────────────────────────────────── */
@@ -54,20 +62,29 @@ function ProductCard({ product, accentColor, delay }) {
       transition={{ delay: delay * 0.06, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="group"
     >
-      {/* Imagen placeholder */}
+      {/* Imagen */}
       <div
         className="relative overflow-hidden mb-3"
         style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-sand)' }}
       >
-        {/* Ornamento central */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span
-            className="font-serif select-none transition-all duration-500 group-hover:scale-110 group-hover:opacity-25"
-            style={{ fontSize: '3rem', color: accentColor, opacity: 0.12 }}
-          >
-            ◆
-          </span>
-        </div>
+        {product.img ? (
+          <img
+            src={product.img}
+            alt={product.name}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          /* Ornamento central — placeholder mientras no hay foto real */
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span
+              className="font-serif select-none transition-all duration-500 group-hover:scale-110 group-hover:opacity-25"
+              style={{ fontSize: '3rem', color: accentColor, opacity: 0.12 }}
+            >
+              ◆
+            </span>
+          </div>
+        )}
 
         {/* Shimmer al hover */}
         <div
