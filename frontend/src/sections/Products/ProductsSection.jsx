@@ -4,6 +4,7 @@ import { Ruler, ShoppingBag, Check } from 'lucide-react'
 import { whatsappHref } from '../../components/WhatsAppButton'
 import { supabase } from '../../lib/supabase'
 import RingSizeGuide from '../../components/RingSizeGuide'
+import ProductDetailModal from '../../components/ProductDetailModal'
 import { useCartStore } from '../../store/cartStore'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
@@ -35,7 +36,7 @@ function CategoryPills({ cats, active, onChange, accent }) {
   )
 }
 
-function ProductCard({ product, accentColor, delay }) {
+function ProductCard({ product, accentColor, delay, onOpenDetail }) {
   const addItem = useCartStore((s) => s.addItem)
   const [added, setAdded] = useState(false)
 
@@ -53,7 +54,8 @@ function ProductCard({ product, accentColor, delay }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ delay: delay * 0.06, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="group"
+      className="group cursor-pointer"
+      onClick={() => onOpenDetail(product)}
     >
       {/* Imagen */}
       <div
@@ -98,9 +100,11 @@ function ProductCard({ product, accentColor, delay }) {
           </div>
         )}
 
-        {/* Overlay hover — agregar al carrito + consulta por WhatsApp */}
+        {/* Overlay hover — agregar al carrito + consulta por WhatsApp. Solo aparece
+            (y solo es clickeable) con hover real de mouse; en táctil, que no tiene
+            hover, queda oculto e inerte para no taparle el toque a la tarjeta. */}
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+          className="hidden md:flex absolute inset-0 flex-col items-center justify-center gap-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-400"
           style={{ backgroundColor: 'rgba(8,58,79,0.08)' }}
         >
           <button
@@ -182,7 +186,7 @@ export default function ProductsSection() {
         supabase.from('categories').select('name').eq('active', true).order('sort_order'),
         supabase
           .from('products')
-          .select('id, name, price, tag, category:categories(name), product_images(storage_path, sort_order)')
+          .select('id, name, price, tag, description, category:categories(name), product_images(storage_path, sort_order)')
           .eq('active', true)
           .order('name'),
       ])
@@ -205,6 +209,7 @@ export default function ProductsSection() {
             price: p.price,
             cat: p.category?.name,
             tag: p.tag || '',
+            description: p.description || '',
             img: getImageUrl(images[0]?.storage_path),
           }
         })
@@ -217,6 +222,7 @@ export default function ProductsSection() {
   }, [])
 
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
 
   const cats = ['Todos', ...categoryNames]
   const filtered = active === 'Todos'
@@ -297,13 +303,15 @@ export default function ProductsSection() {
             >
               <AnimatePresence mode="popLayout">
                 {filtered.map((p, i) => (
-                  <ProductCard key={p.id} product={p} accentColor="var(--gold)" delay={i} />
+                  <ProductCard key={p.id} product={p} accentColor="var(--gold)" delay={i} onOpenDetail={setSelectedProduct} />
                 ))}
               </AnimatePresence>
             </motion.div>
           )}
         </div>
       </div>
+
+      <ProductDetailModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
     </section>
   )
 }
