@@ -1,6 +1,34 @@
 import { useState, useEffect } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ShoppingBag } from 'lucide-react'
 import logo from '../../assets/logo.jpg'
+import { useCartStore, selectTotalItems } from '../../store/cartStore'
+
+function CartButton() {
+  const openCart = useCartStore((s) => s.openCart)
+  const totalItems = useCartStore(selectTotalItems)
+
+  return (
+    <button
+      onClick={openCart}
+      aria-label="Ver carrito"
+      className="relative p-2 transition-opacity hover:opacity-60"
+      style={{ color: 'var(--navy)' }}
+    >
+      <ShoppingBag size={18} />
+      {totalItems > 0 && (
+        <span
+          className="absolute -top-0.5 -right-0.5 flex items-center justify-center font-elegant"
+          style={{
+            width: '16px', height: '16px', borderRadius: '50%',
+            backgroundColor: 'var(--gold)', color: '#fff', fontSize: '0.55rem',
+          }}
+        >
+          {totalItems}
+        </span>
+      )}
+    </button>
+  )
+}
 
 const NAV_LINKS = [
   { label: 'Inicio', href: '#inicio' },
@@ -53,29 +81,33 @@ export default function Navbar() {
         </a>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-10">
-          {NAV_LINKS.map(({ label, href }) => (
-            <a
-              key={href}
-              href={href}
-              onClick={(e) => scrollTo(e, href)}
-              className="text-[10px] tracking-[0.28em] uppercase font-elegant hover-line transition-opacity duration-300 hover:opacity-60"
-              style={{ color: 'var(--navy)' }}
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
+        <div className="flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-10">
+            {NAV_LINKS.map(({ label, href }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={(e) => scrollTo(e, href)}
+                className="text-[10px] tracking-[0.28em] uppercase font-elegant hover-line transition-opacity duration-300 hover:opacity-60"
+                style={{ color: 'var(--navy)' }}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
 
-        {/* Mobile toggle */}
-        <button
-          className="md:hidden p-2 transition-opacity hover:opacity-60"
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Menú"
-          style={{ color: 'var(--navy)' }}
-        >
-          {menuOpen ? <X size={18} /> : <Menu size={18} />}
-        </button>
+          <CartButton />
+
+          {/* Mobile toggle */}
+          <button
+            className="md:hidden p-2 transition-opacity hover:opacity-60"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Menú"
+            style={{ color: 'var(--navy)' }}
+          >
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile dropdown */}

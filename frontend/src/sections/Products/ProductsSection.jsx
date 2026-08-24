@@ -1,34 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Ruler, ShoppingBag, Check } from 'lucide-react'
 import { whatsappHref } from '../../components/WhatsAppButton'
-import alianzaClasica from '../../assets/products/alianza-clasica.jpg'
-import alianzaDiamante from '../../assets/products/alianza-diamante.jpg'
-import alianzaOroBlanco from '../../assets/products/alianza-oro-blanco.jpg'
-import abridorLiso from '../../assets/products/abridor-liso.jpg'
-import abridorTexturado from '../../assets/products/abridor-texturado.jpg'
-import abridorDiamante from '../../assets/products/abridor-diamante.jpg'
-import pulseraPlata from '../../assets/products/pulsera-plata.jpg'
-import cadenaPlata from '../../assets/products/cadena-plata.jpg'
+import { supabase } from '../../lib/supabase'
+import RingSizeGuide from '../../components/RingSizeGuide'
+import { useCartStore } from '../../store/cartStore'
 
-/* ── Datos ─────────────────────────────────────────────────── */
-const CATS = ['Todos', 'Alianzas', 'Anillos Iniciales', 'Abridores', 'Relojes', 'Plata']
+const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
 
-const PRODUCTS = [
-  { id: 1,  name: 'Alianza Clásica',      cat: 'Alianzas',           tag: '', img: alianzaClasica },
-  { id: 2,  name: 'Alianza Diamante',     cat: 'Alianzas',           tag: '', img: alianzaDiamante },
-  { id: 3,  name: 'Alianza Oro Blanco',   cat: 'Alianzas',           tag: '', img: alianzaOroBlanco },
-  { id: 4,  name: 'Anillo Inicial A',     cat: 'Anillos Iniciales',  tag: '' },
-  { id: 5,  name: 'Anillo Inicial M',     cat: 'Anillos Iniciales',  tag: '' },
-  { id: 6,  name: 'Anillo Inicial Doble', cat: 'Anillos Iniciales',  tag: '' },
-  { id: 7,  name: 'Abridor Liso',         cat: 'Abridores',          tag: '', img: abridorLiso },
-  { id: 8,  name: 'Abridor Texturado',    cat: 'Abridores',          tag: '', img: abridorTexturado },
-  { id: 9,  name: 'Abridor Diamante',     cat: 'Abridores',          tag: '', img: abridorDiamante },
-  { id: 10, name: 'Reloj Clásico',        cat: 'Relojes',            tag: '' },
-  { id: 11, name: 'Reloj Deportivo',      cat: 'Relojes',            tag: '' },
-  { id: 12, name: 'Reloj Elegance',       cat: 'Relojes',            tag: '' },
-  { id: 13, name: 'Pulsera Plata',        cat: 'Plata',              tag: '', img: pulseraPlata },
-  { id: 14, name: 'Cadena Plata',         cat: 'Plata',              tag: '', img: cadenaPlata },
-]
+function getImageUrl(storagePath) {
+  if (!storagePath) return null
+  return supabase.storage.from('product-images').getPublicUrl(storagePath).data.publicUrl
+}
 
 /* ── Sub-componentes ────────────────────────────────────────── */
 function CategoryPills({ cats, active, onChange, accent }) {
@@ -53,6 +36,16 @@ function CategoryPills({ cats, active, onChange, accent }) {
 }
 
 function ProductCard({ product, accentColor, delay }) {
+  const addItem = useCartStore((s) => s.addItem)
+  const [added, setAdded] = useState(false)
+
+  function handleAddToCart(e) {
+    e.stopPropagation()
+    addItem(product)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1200)
+  }
+
   return (
     <motion.div
       layout
@@ -105,11 +98,19 @@ function ProductCard({ product, accentColor, delay }) {
           </div>
         )}
 
-        {/* Overlay hover — consulta por WhatsApp */}
+        {/* Overlay hover — agregar al carrito + consulta por WhatsApp */}
         <div
-          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
           style={{ backgroundColor: 'rgba(8,58,79,0.08)' }}
         >
+          <button
+            onClick={handleAddToCart}
+            className="flex items-center gap-1.5 text-[9px] tracking-[0.3em] uppercase font-elegant px-4 py-2 transition-opacity hover:opacity-85"
+            style={{ color: '#fff', backgroundColor: added ? 'var(--teal)' : accentColor }}
+          >
+            {added ? <Check size={12} /> : <ShoppingBag size={12} />}
+            {added ? 'Agregado' : 'Agregar al carrito'}
+          </button>
           <a
             href={whatsappHref(`Hola! Quiero consultar por ${product.name}.`)}
             target="_blank"
@@ -136,6 +137,11 @@ function ProductCard({ product, accentColor, delay }) {
       >
         {product.name}
       </p>
+      {product.price > 0 && (
+        <p className="text-xs font-elegant mt-1" style={{ color: 'var(--navy-dim)' }}>
+          {currency.format(product.price)}
+        </p>
+      )}
       {/* Línea animada */}
       <div
         className="h-px mt-2 transition-all duration-400"
@@ -160,10 +166,62 @@ function ProductCard({ product, accentColor, delay }) {
 /* ── Sección principal ──────────────────────────────────────── */
 export default function ProductsSection() {
   const [active, setActive] = useState('Todos')
+  const [categoryNames, setCategoryNames] = useState([])
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
+  useEffect(() => {
+    let cancelled = false
+
+    async function load() {
+      setLoading(true)
+      setError(null)
+
+      const [{ data: cats, error: catError }, { data: prods, error: prodError }] = await Promise.all([
+        supabase.from('categories').select('name').eq('active', true).order('sort_order'),
+        supabase
+          .from('products')
+          .select('id, name, price, tag, category:categories(name), product_images(storage_path, sort_order)')
+          .eq('active', true)
+          .order('name'),
+      ])
+
+      if (cancelled) return
+
+      if (catError || prodError) {
+        setError(catError?.message || prodError?.message)
+        setLoading(false)
+        return
+      }
+
+      setCategoryNames(cats.map((c) => c.name))
+      setProducts(
+        prods.map((p) => {
+          const images = [...(p.product_images || [])].sort((a, b) => a.sort_order - b.sort_order)
+          return {
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            cat: p.category?.name,
+            tag: p.tag || '',
+            img: getImageUrl(images[0]?.storage_path),
+          }
+        })
+      )
+      setLoading(false)
+    }
+
+    load()
+    return () => { cancelled = true }
+  }, [])
+
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false)
+
+  const cats = ['Todos', ...categoryNames]
   const filtered = active === 'Todos'
-    ? PRODUCTS
-    : PRODUCTS.filter((p) => p.cat === active)
+    ? products
+    : products.filter((p) => p.cat === active)
 
   return (
     <section id="productos">
@@ -200,26 +258,50 @@ export default function ProductsSection() {
         >
           Explorá nuestra colección · Seleccioná una categoría
         </p>
+        <button
+          onClick={() => setSizeGuideOpen(true)}
+          className="inline-flex items-center gap-1.5 mt-5 font-elegant transition-opacity hover:opacity-70"
+          style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--navy)' }}
+        >
+          <Ruler size={13} style={{ color: 'var(--gold)' }} />
+          ¿No sabés tu talle? Guía de talles
+        </button>
       </motion.div>
+
+      <RingSizeGuide open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
 
       {/* Catálogo */}
       <div className="py-4 pb-28" style={{ backgroundColor: 'var(--bg-alt)' }}>
         <div className="max-w-7xl mx-auto px-6 md:px-10">
 
           {/* Filtros */}
-          <CategoryPills cats={CATS} active={active} onChange={setActive} accent="var(--gold)" />
+          <CategoryPills cats={cats} active={active} onChange={setActive} accent="var(--gold)" />
+
+          {error && (
+            <p className="text-xs font-elegant py-10 text-center" style={{ color: 'var(--navy-dim)' }}>
+              No pudimos cargar el catálogo. Probá recargar la página.
+            </p>
+          )}
+
+          {!error && loading && (
+            <p className="text-xs font-elegant py-10 text-center" style={{ color: 'var(--navy-dim)' }}>
+              Cargando productos...
+            </p>
+          )}
 
           {/* Grid de productos */}
-          <motion.div
-            layout
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-5 gap-y-10"
-          >
-            <AnimatePresence mode="popLayout">
-              {filtered.map((p, i) => (
-                <ProductCard key={p.id} product={p} accentColor="var(--gold)" delay={i} />
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          {!error && !loading && (
+            <motion.div
+              layout
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-5 gap-y-10"
+            >
+              <AnimatePresence mode="popLayout">
+                {filtered.map((p, i) => (
+                  <ProductCard key={p.id} product={p} accentColor="var(--gold)" delay={i} />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          )}
         </div>
       </div>
     </section>
