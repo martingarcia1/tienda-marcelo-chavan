@@ -72,6 +72,8 @@
   /* Tipografía */
   .font-serif   { font-family: 'Cormorant Garamond', Georgia, serif; }
   .font-elegant { font-family: 'Montserrat', Arial, sans-serif; }
+  .font-sign    { font-family: 'Cinzel', Georgia, serif; }
+  .font-script  { font-family: 'Pinyon Script', cursive; }
 
   /* Colores brand */
   .text-navy     { color: var(--navy); }
@@ -102,6 +104,23 @@
       var(--gold-bright) 50%,
       var(--gold-light) 65%,
       var(--gold) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer-gold 4s linear infinite;
+  }
+
+  /* Texto cobrizo con shimmer (Hero sobre fondo oscuro) */
+  .text-copper-shimmer {
+    background: linear-gradient(
+      90deg,
+      #a85f31 0%,
+      #e0a06a 35%,
+      #f5c896 50%,
+      #e0a06a 65%,
+      #a85f31 100%
     );
     background-size: 200% auto;
     -webkit-background-clip: text;

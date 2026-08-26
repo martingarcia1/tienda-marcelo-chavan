@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
 import { MapPin, Gem, Award, Truck, ArrowUpRight } from 'lucide-react'
 import photoFamilia from '../../assets/photo-familia.png'
-import photoPropietaria from '../../assets/photo-propietaria.png'
+import photoMarcelo from '../../assets/marcelo-chavan-retrato.avif'
+
 
 const HIGHLIGHTS = [
   { icon: Gem, title: 'Oro & Plata', sub: 'Alta gama' },
@@ -59,15 +60,6 @@ export default function AboutSection() {
           viewport={{ once: true, margin: '-80px' }}
           variants={fadeUp}
         >
-          <div className="flex items-center gap-5 mb-6">
-            <span
-              className="font-elegant"
-              style={{ fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'var(--gold)' }}
-            >
-              01 — Nuestra Historia
-            </span>
-            <div className="flex-1 h-px max-w-[200px]" style={{ backgroundColor: 'var(--border-gold)' }} />
-          </div>
           <h2
             className="font-serif font-light"
             style={{
@@ -85,6 +77,153 @@ export default function AboutSection() {
         </motion.div>
 
         {/* ── Bloque 1: texto editorial + foto familia ── */}
+
+
+        {/* ── Bloque 1.5: La Historia — retrato + relato largo ── */}
+        <div className="grid md:grid-cols-12 gap-10 md:gap-8 items-start mb-28 md:mb-36">
+
+          {/* RETRATO — 5 columnas izquierda */}
+          <motion.div
+            className="md:col-span-5 lg:col-span-4 relative"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={fadeIn}
+          >
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                top: '-20px', left: '-20px', right: '20px', bottom: '20px',
+                border: '1px solid var(--border-gold)',
+              }}
+            />
+            {photoMarcelo ? (
+              <img
+                src={photoMarcelo}
+                alt="Marcelo Chaván, fundador de Joyería Marcelo Chavan"
+                className="relative w-full object-cover"
+                style={{
+                  aspectRatio: '4/5',
+                  objectPosition: 'center top',
+                  boxShadow: '0 30px 80px rgba(8,58,79,0.14)',
+                }}
+              />
+            ) : (
+              <div
+                className="relative w-full flex items-center justify-center"
+                style={{ aspectRatio: '4/5', backgroundColor: 'var(--bg-sand)', boxShadow: '0 30px 80px rgba(8,58,79,0.14)' }}
+              >
+                <span className="font-serif" style={{ fontSize: '3rem', color: 'var(--gold)', opacity: 0.25 }}>◆</span>
+              </div>
+            )}
+            <div
+              className="absolute -bottom-5 right-6 px-6 py-4 text-right"
+              style={{
+                backgroundColor: 'var(--bg)',
+                boxShadow: '0 12px 40px rgba(8,58,79,0.12)',
+                borderRight: '2px solid var(--gold)',
+              }}
+            >
+              <p
+                className="font-elegant"
+                style={{ fontSize: '0.55rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gold)' }}
+              >
+                Marcelo Chaván
+              </p>
+              <p className="font-serif mt-1" style={{ fontSize: '0.95rem', color: 'var(--navy)', fontStyle: 'italic' }}>
+                Fundador
+              </p>
+            </div>
+          </motion.div>
+
+          {/* TEXTO — 7 columnas derecha */}
+          <motion.div
+            className="md:col-span-7 lg:col-span-7 lg:col-start-6 space-y-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={fadeUp}
+          >
+            <div className="flex items-center gap-5">
+              <span
+                className="font-elegant"
+                style={{ fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'var(--gold)' }}
+              >
+                La Historia
+              </span>
+              <div className="flex-1 h-px max-w-[120px]" style={{ backgroundColor: 'var(--border-gold)' }} />
+            </div>
+
+            <h3
+              className="font-serif font-light"
+              style={{
+                fontSize: 'clamp(1.9rem, 3.8vw, 3rem)',
+                color: 'var(--navy)',
+                letterSpacing: '0.03em',
+                lineHeight: 1.2,
+              }}
+            >
+              La historia de{' '}
+              <em style={{ color: 'var(--gold)', fontStyle: 'italic' }}>Joyería Marcelo Chavan</em>
+            </h3>
+
+            <blockquote
+              className="font-serif font-light"
+              style={{ fontSize: 'clamp(1.2rem, 2.2vw, 1.6rem)', color: 'var(--navy)', lineHeight: 1.4 }}
+            >
+              Una historia que comenzó en 1957
+            </blockquote>
+
+            <div className="space-y-6">
+              <p className="font-elegant" style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}>
+                En 1957, Marcelo Chaván decidió transformar su experiencia y pasión por la joyería en un
+                proyecto propio. Así nació una marca que, con el paso de los años, se convertiría en un
+                referente de la joyería y relojería en Tucumán.
+              </p>
+              <p className="font-elegant" style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}>
+                Desde sus comienzos, Marcelo entendió que detrás de cada pieza existe algo más que un
+                objeto: hay una historia, una celebración y un vínculo que merece ser cuidado.
+              </p>
+              <p className="font-elegant" style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}>
+                A lo largo de su trayectoria enfrentó grandes desafíos, incluso importantes pérdidas a
+                causa de robos. Sin embargo, eligió seguir adelante con la misma determinación que lo
+                llevó a comenzar.
+              </p>
+              <p className="font-elegant" style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}>
+                Su historia también estuvo marcada por la amistad y la generosidad. En 1960, luego de un
+                robo que afectó gravemente a Joyería Siufi, Marcelo decidió ayudar a quienes habían sido
+                sus maestros, poniendo a disposición productos y recursos de su propio negocio. Ese gesto
+                fortaleció un vínculo que perduraría durante generaciones.
+              </p>
+              <p className="font-elegant" style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}>
+                En 1999, Marcelo confió el futuro de su marca a Miguel Siufi, dando comienzo a una nueva
+                etapa en la historia de la joyería.
+              </p>
+              <p className="font-elegant" style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}>
+                Hoy, Marcelo Chaván continúa creciendo sin perder de vista aquello que le dio origen: la
+                excelencia, la confianza, la dedicación y el valor de las relaciones humanas.
+              </p>
+              <p className="font-elegant" style={{ fontSize: '0.85rem', lineHeight: 2.1, color: 'var(--navy-dim)', fontWeight: 300 }}>
+                Más de seis décadas después, seguimos creyendo en lo mismo:
+              </p>
+            </div>
+
+            <blockquote
+              className="font-serif"
+              style={{
+                fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)',
+                color: 'var(--gold)',
+                fontStyle: 'italic',
+                lineHeight: 1.5,
+                borderLeft: '2px solid var(--gold)',
+                paddingLeft: '1.5rem',
+              }}
+            >
+              Las mejores historias merecen ser acompañadas por algo que perdure.
+            </blockquote>
+          </motion.div>
+        </div>
+
         <div className="grid md:grid-cols-12 gap-10 md:gap-8 items-start mb-28 md:mb-36">
 
           {/* TEXTO — 6 columnas izquierda */}
@@ -210,29 +349,30 @@ export default function AboutSection() {
           </motion.div>
         </div>
 
-        {/* ── Bloque 2: locales — foto izquierda, texto derecha (editorial alternado) ── */}
-        <div className="grid md:grid-cols-12 gap-10 md:gap-8 items-center mb-28 md:mb-36">
+        {/* ── Bloque 2: locales — a todo lo ancho, con foco en los espacios ── */}
+        <div className="mb-28 md:mb-36">
 
-          {/* TEXTO LOCALES — izquierda */}
+          {/* Encabezado centrado */}
           <motion.div
-            className="md:col-span-6 lg:col-span-5 space-y-8 order-1"
+            className="max-w-2xl mx-auto text-center mb-16"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
             variants={fadeUp}
           >
-            <div className="flex items-center gap-5">
+            <div className="flex items-center justify-center gap-5 mb-6">
+              <div className="flex-1 h-px max-w-[80px]" style={{ backgroundColor: 'var(--border-gold)' }} />
               <span
                 className="font-elegant"
                 style={{ fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'var(--gold)' }}
               >
-                02 — Nuestros Locales
+                Nuestros Locales
               </span>
-              <div className="flex-1 h-px max-w-[120px]" style={{ backgroundColor: 'var(--border-gold)' }} />
+              <div className="flex-1 h-px max-w-[80px]" style={{ backgroundColor: 'var(--border-gold)' }} />
             </div>
 
             <h3
-              className="font-serif font-light"
+              className="font-serif font-light mb-6"
               style={{
                 fontSize: 'clamp(1.9rem, 3.8vw, 3rem)',
                 color: 'var(--navy)',
@@ -252,96 +392,70 @@ export default function AboutSection() {
               en pleno centro de San Miguel de Tucumán. Cada espacio está pensado para brindarte una
               experiencia de compra cálida y personalizada, donde podés ver, tocar y elegir la pieza perfecta.
             </p>
-
-            {/* Cards de locales refinadas */}
-            <div className="space-y-3">
-              {[
-                { ciudad: 'Galería Áncel · Local 11', detalle: 'Muñecas 132/6 · Sede central', num: 'I', direccion: 'Galería Áncel Local 11, Muñecas 132, San Miguel de Tucumán' },
-                { ciudad: 'Galería Áncel · Local 9', detalle: 'Platería Fina', num: 'II', direccion: 'Galería Áncel Local 9, Muñecas 132, San Miguel de Tucumán' },
-                { ciudad: 'Peatonal Mendoza', detalle: 'Joyería General · Relojería Japonesa', num: 'III', direccion: 'Peatonal Mendoza, San Miguel de Tucumán' },
-              ].map(({ ciudad, detalle, num, direccion }) => (
-                <a
-                  key={ciudad}
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-5 p-5 transition-all duration-400"
-                  style={{
-                    backgroundColor: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    boxShadow: '0 4px 20px rgba(8,58,79,0.05)',
-                  }}
-                >
-                  <span
-                    className="font-serif flex-shrink-0"
-                    style={{ fontSize: '1.5rem', color: 'var(--gold)', fontStyle: 'italic', width: '28px' }}
-                  >
-                    {num}
-                  </span>
-                  <div className="flex-1">
-                    <p
-                      className="font-elegant"
-                      style={{ fontSize: '0.7rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--navy)', fontWeight: 500 }}
-                    >
-                      {ciudad}
-                    </p>
-                    <p className="font-elegant mt-0.5" style={{ fontSize: '0.65rem', color: 'var(--navy-dim)' }}>
-                      {detalle}
-                    </p>
-                  </div>
-                  <ArrowUpRight
-                    size={16}
-                    className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                    style={{ color: 'var(--gold)' }}
-                  />
-                </a>
-              ))}
-            </div>
           </motion.div>
 
-          {/* FOTO PROPIETARIA — derecha */}
+          {/* Tarjetas de locales — a todo lo ancho */}
           <motion.div
-            className="md:col-span-6 lg:col-span-6 lg:col-start-7 relative order-2"
+            className="grid md:grid-cols-3 gap-6"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
-            variants={fadeIn}
+            variants={stagger}
           >
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                top: '-20px', right: '-20px', left: '20px', bottom: '20px',
-                border: '1px solid var(--border-gold)',
-              }}
-            />
-            <img
-              src={photoPropietaria}
-              alt="Propietaria de los locales Marcelo Chavan"
-              className="relative w-full object-cover"
-              style={{
-                aspectRatio: '4/5',
-                objectPosition: 'center 20%',
-                boxShadow: '0 30px 80px rgba(8,58,79,0.14)',
-              }}
-            />
-            <div
-              className="absolute -bottom-5 right-6 px-6 py-4 text-right"
-              style={{
-                backgroundColor: 'var(--bg)',
-                boxShadow: '0 12px 40px rgba(8,58,79,0.12)',
-                borderRight: '2px solid var(--gold)',
-              }}
-            >
-              <p
-                className="font-elegant"
-                style={{ fontSize: '0.55rem', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--gold)' }}
+            {[
+              { ciudad: 'Sede Central', detalle: 'Ubicada en Muñecas 136, Galería Áncel, Local 11', num: 'I', direccion: 'Joyería Marcelo Chavan' },
+              { ciudad: 'Peatonal Mendoza', detalle: 'Joyería General · Relojería Japonesa', num: 'II', direccion: 'Peatonal Mendoza 612, San Miguel de Tucumán' },
+              { ciudad: 'Galería Áncel · Local 9', detalle: 'Toda una línea de productos especializados en Platería Fina disponible, en Muñecas 136 Galería Áncel, Local 9 y en Av. Aconquija 688, Local 7. Pulseras, pendientes, anillos, collares y mucho más.', num: 'III', direccion: 'Galería Áncel Local 9, Muñecas 132, San Miguel de Tucumán' },
+            ].map(({ ciudad, detalle, num, direccion }) => (
+              <motion.a
+                key={ciudad}
+                variants={fadeUp}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative flex flex-col h-full p-8 transition-all duration-400 hover:-translate-y-1"
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  boxShadow: '0 4px 20px rgba(8,58,79,0.05)',
+                }}
               >
-                Nuestros locales
-              </p>
-              <p className="font-serif mt-1" style={{ fontSize: '0.95rem', color: 'var(--navy)', fontStyle: 'italic' }}>
-                San Miguel de Tucumán, Argentina
-              </p>
-            </div>
+                <span
+                  className="font-serif block mb-6"
+                  style={{ fontSize: '2.2rem', color: 'var(--gold)', fontStyle: 'italic', opacity: 0.7 }}
+                >
+                  {num}
+                </span>
+                <p
+                  className="font-serif mb-3"
+                  style={{ fontSize: '1.4rem', color: 'var(--navy)', letterSpacing: '0.02em' }}
+                >
+                  {ciudad}
+                </p>
+                <p
+                  className="font-elegant flex-1"
+                  style={{ fontSize: '0.78rem', lineHeight: 1.9, color: 'var(--navy-dim)', fontWeight: 300 }}
+                >
+                  {detalle}
+                </p>
+                <div
+                  className="flex items-center gap-2 mt-6 pt-5 font-elegant"
+                  style={{
+                    borderTop: '1px solid var(--border)',
+                    fontSize: '0.62rem',
+                    letterSpacing: '0.25em',
+                    textTransform: 'uppercase',
+                    color: 'var(--gold)',
+                  }}
+                >
+                  Ver en el mapa
+                  <ArrowUpRight
+                    size={14}
+                    className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </div>
+              </motion.a>
+            ))}
           </motion.div>
         </div>
 
