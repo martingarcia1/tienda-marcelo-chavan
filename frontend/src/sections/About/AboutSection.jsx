@@ -543,7 +543,7 @@ export default function AboutSection() {
               }}
             >
               <div
-                className="flex items-center gap-16 whitespace-nowrap w-max"
+                className="flex items-center gap-8 md:gap-16 whitespace-nowrap w-max"
                 style={{ animation: 'marquee 32s linear infinite' }}
               >
                 {[...MARCAS, ...MARCAS].map(({ src, name, url }, i) => {
@@ -551,15 +551,12 @@ export default function AboutSection() {
                     <img
                       src={src}
                       alt={name}
-                      className="flex-shrink-0 transition-all duration-500"
+                      className="flex-shrink-0"
                       style={{
-                        height: '170px',
+                        height: 'clamp(48px, 14vw, 170px)',
                         width: 'auto',
                         objectFit: 'contain',
-                        filter: 'grayscale(100%) opacity(0.55)',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.filter = 'grayscale(0%) opacity(1)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.filter = 'grayscale(100%) opacity(0.55)')}
                     />
                   )
                   return url ? (
