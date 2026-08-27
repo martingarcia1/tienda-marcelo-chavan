@@ -553,7 +553,7 @@ export default function AboutSection() {
                       alt={name}
                       className="flex-shrink-0"
                       style={{
-                        height: 'clamp(48px, 14vw, 170px)',
+                        height: 'clamp(60px, 14vw, 170px)',
                         width: 'auto',
                         objectFit: 'contain',
                       }}
