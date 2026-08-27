@@ -1,15 +1,31 @@
 import { motion } from 'framer-motion'
-import { MapPin, Gem, Award, Truck, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import photoFamilia from '../../assets/photo-familia.png'
 import photoMarcelo from '../../assets/marcelo-chavan-retrato.avif'
 
+// Sitio oficial de cada marca — el de Argentina cuando existe uno dedicado
+// (verificado: TAG Heuer y Montblanc sí tienen; el resto no, van al sitio global).
+const MARCA_URLS = {
+  'gucci': 'https://www.gucci.com/',
+  'longines': 'https://www.longines.com/es',
+  'luminox': 'https://www.luminox.com/',
+  'montblanc': 'https://www.montblanc.com/es-ar',
+  'movado': 'https://www.movado.com/',
+  'swiss alpine military': 'https://www.swissalpinemilitary.ch/en',
+  'tag heuer': 'https://www.tagheuer.com/ar/es/',
+  'victorinox': 'https://www.victorinox.com/',
+}
 
-const HIGHLIGHTS = [
-  { icon: Gem, title: 'Oro & Plata', sub: 'Alta gama' },
-  { icon: Award, title: 'Desde 1957', sub: 'Tradición' },
-  { icon: MapPin, title: 'Tucumán', sub: 'Tres locales' },
-  { icon: Truck, title: 'Envíos', sub: 'A todo el país' },
-]
+// Logos de marcas — se recortan del archivo que suba el cliente a assets/brands/.
+// Mientras no existan, MARCAS queda vacío y la sección no se renderiza.
+const MARCAS = Object.entries(
+  import.meta.glob('../../assets/brands/*.{png,jpg,jpeg,webp,avif}', { eager: true, import: 'default' })
+)
+  .map(([path, src]) => {
+    const name = path.split('/').pop().replace(/\.[^.]+$/, '').replace(/-/g, ' ')
+    return { src, name, url: MARCA_URLS[name] || null }
+  })
+  .sort((a, b) => a.name.localeCompare(b.name))
 
 const fadeUp = {
   hidden: { opacity: 0, y: 48 },
@@ -501,39 +517,70 @@ export default function AboutSection() {
           </div>
         </motion.div>
 
-        {/* ── Highlights minimalistas ── */}
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-px"
-          style={{ backgroundColor: 'var(--border)' }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={stagger}
-        >
-          {HIGHLIGHTS.map(({ icon: Icon, title, sub }) => (
-            <motion.div
-              key={title}
-              variants={fadeUp}
-              className="group text-center py-10 px-4 transition-colors duration-500"
-              style={{ backgroundColor: 'var(--bg)' }}
-            >
-              <Icon
-                size={19}
-                className="mx-auto mb-4 transition-transform duration-500 group-hover:scale-110"
-                style={{ color: 'var(--gold)' }}
-              />
-              <p
-                className="font-elegant mb-1"
-                style={{ fontSize: '0.62rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'var(--navy)', fontWeight: 500 }}
+        {/* ── Carrusel de marcas ── */}
+        {MARCAS.length > 0 && (
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-40px' }}
+            variants={fadeUp}
+          >
+            <div className="flex items-center gap-5 mb-12">
+              <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border-gold)' }} />
+              <span
+                className="font-elegant flex-shrink-0"
+                style={{ fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'var(--gold)' }}
               >
-                {title}
-              </p>
-              <p className="font-elegant" style={{ fontSize: '0.62rem', color: 'var(--navy-dim)' }}>
-                {sub}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
+              </span>
+              <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border-gold)' }} />
+            </div>
+
+            <div
+              className="overflow-hidden"
+              style={{
+                maskImage: 'linear-gradient(90deg, transparent, black 8%, black 92%, transparent)',
+                WebkitMaskImage: 'linear-gradient(90deg, transparent, black 8%, black 92%, transparent)',
+              }}
+            >
+              <div
+                className="flex items-center gap-16 whitespace-nowrap w-max"
+                style={{ animation: 'marquee 32s linear infinite' }}
+              >
+                {[...MARCAS, ...MARCAS].map(({ src, name, url }, i) => {
+                  const img = (
+                    <img
+                      src={src}
+                      alt={name}
+                      className="flex-shrink-0 transition-all duration-500"
+                      style={{
+                        height: '170px',
+                        width: 'auto',
+                        objectFit: 'contain',
+                        filter: 'grayscale(100%) opacity(0.55)',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.filter = 'grayscale(0%) opacity(1)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.filter = 'grayscale(100%) opacity(0.55)')}
+                    />
+                  )
+                  return url ? (
+                    <a
+                      key={`${name}-${i}`}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-shrink-0"
+                      aria-label={`Sitio oficial de ${name}`}
+                    >
+                      {img}
+                    </a>
+                  ) : (
+                    <span key={`${name}-${i}`}>{img}</span>
+                  )
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
       </div>
     </section>
