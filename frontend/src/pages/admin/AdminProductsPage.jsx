@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { useAuthStore } from '../../store/authStore'
 import AdminProductFormModal from './AdminProductFormModal'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
@@ -11,6 +12,7 @@ function getImageUrl(storagePath) {
 }
 
 export default function AdminProductsPage() {
+  const user = useAuthStore((s) => s.user)
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -24,6 +26,7 @@ export default function AdminProductsPage() {
       supabase
         .from('products')
         .select('id, name, slug, price, stock, active, category_id, category:categories(name), product_images(storage_path, sort_order)')
+        .eq('created_by', user.id)
         .order('name'),
       supabase.from('categories').select('*').order('sort_order'),
     ])
@@ -63,9 +66,14 @@ export default function AdminProductsPage() {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="font-serif font-light" style={{ fontSize: '1.8rem', color: 'var(--navy)' }}>
-          Productos
-        </h1>
+        <div>
+          <h1 className="font-serif font-light" style={{ fontSize: '1.8rem', color: 'var(--navy)' }}>
+            Productos
+          </h1>
+          <p className="font-elegant text-xs mt-1" style={{ color: 'var(--navy-xdim)' }}>
+            Mostrando solo los productos que subiste vos
+          </p>
+        </div>
         <button
           onClick={() => setCreatingNew(true)}
           className="flex items-center gap-2 px-5 py-2.5 font-elegant transition-opacity hover:opacity-85"
