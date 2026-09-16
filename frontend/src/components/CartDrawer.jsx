@@ -1,15 +1,10 @@
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useCartStore, selectTotalPrice } from '../store/cartStore'
-import { whatsappHref } from './WhatsAppButton'
+import CheckoutModal from './CheckoutModal'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
-
-function mensajePedido(items, total) {
-  const lineas = items.map((i) => `• ${i.qty}x ${i.name}${i.price > 0 ? ` — ${currency.format(i.price * i.qty)}` : ''}`)
-  const totalLinea = total > 0 ? `\n\nTotal: ${currency.format(total)}` : ''
-  return `Hola! Quiero hacer este pedido:\n\n${lineas.join('\n')}${totalLinea}`
-}
 
 export default function CartDrawer() {
   const isOpen = useCartStore((s) => s.isOpen)
@@ -18,8 +13,10 @@ export default function CartDrawer() {
   const updateQty = useCartStore((s) => s.updateQty)
   const removeItem = useCartStore((s) => s.removeItem)
   const total = useCartStore(selectTotalPrice)
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -139,20 +136,20 @@ export default function CartDrawer() {
                     </span>
                   </div>
                 )}
-                <a
-                  href={whatsappHref(mensajePedido(items, total))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-center py-3.5 font-elegant transition-opacity hover:opacity-85"
+                <button
+                  onClick={() => setCheckoutOpen(true)}
+                  className="w-full text-center py-3.5 font-elegant transition-opacity hover:opacity-85"
                   style={{ fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', backgroundColor: 'var(--gold)', color: '#fff' }}
                 >
-                  Finalizar por WhatsApp
-                </a>
+                  Finalizar compra
+                </button>
               </div>
             )}
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
+    <CheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
+    </>
   )
 }

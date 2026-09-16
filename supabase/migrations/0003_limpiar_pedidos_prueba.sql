@@ -1,0 +1,50 @@
+-- Limpieza puntual de pedidos generados durante las pruebas de la
+-- integración de Mercado Pago (checkout automatizado, cuentas de prueba,
+-- etc.). No afecta el pedido real de producción ni ningún dato del catálogo.
+delete from order_items where order_id in (
+  '5c7e1593-c5c2-42ec-8946-e8ee3226f9ef', '3d1c802a-597d-4e26-bb2b-88f18ea7ba44',
+  'a1364e2a-43a3-4378-bce7-93054ce0ad9f', 'c65b6919-be88-4aeb-9c81-13f733a38423',
+  'd68f9b2c-0734-4982-a11c-26bfc5cff7e8', 'f6c801b3-2d28-4c11-b04e-a8d01d556806',
+  'a303045b-e274-46d1-894b-4548012074d2', '90317374-b0d8-4970-91f8-3c013c81891a',
+  '59d6ac75-bfd9-4d1c-b76a-f84fd52a0d23', '73977854-a754-4fde-b540-a1f427c85dca',
+  'aca6634e-bc57-4ea0-859d-4d506a62abc0', 'fc75610a-cffd-4d7e-ba90-c6c0d4f2f0d6',
+  '03dd8343-626b-41c8-bdd9-e8a39182dddb', '89a925fe-3fec-4b1e-adab-be4fd2a4dfd1',
+  '27fcb80c-62f3-4b15-81ec-e6250dd0cc8d', 'dd953e79-cf36-43c7-88c8-2006a676b67c',
+  '2f05cc6d-9801-4845-adaa-954cc7e81b09', 'c91f77a6-d650-4611-a984-caac6875b937',
+  '3c1a2f63-aa7b-4fc1-a263-d2dd5fe85f77', 'f0f3b930-b082-4975-9ef7-da19aec5e25e',
+  'd1937475-8342-4ef8-b906-cbbe0d64d956', '1398f64b-0f44-4aaf-b642-97694e0c6b7c',
+  '3cbab533-a88c-4429-b171-7cee654ac8cd', '41966308-acb9-41f6-8f43-17f33337e69e',
+  '7919088a-2a85-46cc-8806-cb847d444ce6', 'e56c5185-c0d8-4c33-a263-2f5c3eed0f87',
+  '7dcc6124-a744-45bb-b237-2c1d364b0915', 'c94d6605-e995-4764-a98f-b9db44bb08be',
+  '86d83deb-c04a-4f60-834a-f674c089a26d', '1333d446-e131-4cfd-b102-1a659e9b122d',
+  '48222be3-1a4b-46cd-94ff-140a33f2109a', '34f92612-c991-4974-b64b-666af5551e12',
+  '089a5749-ba7a-413e-ac2f-1be8bc36ffbe', '93f3eade-c43f-4631-8606-aee8f37485e0',
+  'ecc8dcab-a712-40ce-a5cd-b85f7531f66a', '7c7c2a44-f281-4f44-bcb3-b1ccd427bce6',
+  'be747f8c-53fb-496f-9c75-31fc8a692245', 'ac0217b3-cea4-4d14-99b3-a3dfacefe15d',
+  'dc1168c1-53f3-42bf-bfa4-e80f56d6f058', '92df941f-d233-4fe1-adf8-f97637bb635f',
+  'a3334055-c892-4647-9680-3120c3fddf47', 'f3d7d1da-578f-4685-8314-7cd1f8ee0029'
+);
+
+delete from orders where id in (
+  '5c7e1593-c5c2-42ec-8946-e8ee3226f9ef', '3d1c802a-597d-4e26-bb2b-88f18ea7ba44',
+  'a1364e2a-43a3-4378-bce7-93054ce0ad9f', 'c65b6919-be88-4aeb-9c81-13f733a38423',
+  'd68f9b2c-0734-4982-a11c-26bfc5cff7e8', 'f6c801b3-2d28-4c11-b04e-a8d01d556806',
+  'a303045b-e274-46d1-894b-4548012074d2', '90317374-b0d8-4970-91f8-3c013c81891a',
+  '59d6ac75-bfd9-4d1c-b76a-f84fd52a0d23', '73977854-a754-4fde-b540-a1f427c85dca',
+  'aca6634e-bc57-4ea0-859d-4d506a62abc0', 'fc75610a-cffd-4d7e-ba90-c6c0d4f2f0d6',
+  '03dd8343-626b-41c8-bdd9-e8a39182dddb', '89a925fe-3fec-4b1e-adab-be4fd2a4dfd1',
+  '27fcb80c-62f3-4b15-81ec-e6250dd0cc8d', 'dd953e79-cf36-43c7-88c8-2006a676b67c',
+  '2f05cc6d-9801-4845-adaa-954cc7e81b09', 'c91f77a6-d650-4611-a984-caac6875b937',
+  '3c1a2f63-aa7b-4fc1-a263-d2dd5fe85f77', 'f0f3b930-b082-4975-9ef7-da19aec5e25e',
+  'd1937475-8342-4ef8-b906-cbbe0d64d956', '1398f64b-0f44-4aaf-b642-97694e0c6b7c',
+  '3cbab533-a88c-4429-b171-7cee654ac8cd', '41966308-acb9-41f6-8f43-17f33337e69e',
+  '7919088a-2a85-46cc-8806-cb847d444ce6', 'e56c5185-c0d8-4c33-a263-2f5c3eed0f87',
+  '7dcc6124-a744-45bb-b237-2c1d364b0915', 'c94d6605-e995-4764-a98f-b9db44bb08be',
+  '86d83deb-c04a-4f60-834a-f674c089a26d', '1333d446-e131-4cfd-b102-1a659e9b122d',
+  '48222be3-1a4b-46cd-94ff-140a33f2109a', '34f92612-c991-4974-b64b-666af5551e12',
+  '089a5749-ba7a-413e-ac2f-1be8bc36ffbe', '93f3eade-c43f-4631-8606-aee8f37485e0',
+  'ecc8dcab-a712-40ce-a5cd-b85f7531f66a', '7c7c2a44-f281-4f44-bcb3-b1ccd427bce6',
+  'be747f8c-53fb-496f-9c75-31fc8a692245', 'ac0217b3-cea4-4d14-99b3-a3dfacefe15d',
+  'dc1168c1-53f3-42bf-bfa4-e80f56d6f058', '92df941f-d233-4fe1-adf8-f97637bb635f',
+  'a3334055-c892-4647-9680-3120c3fddf47', 'f3d7d1da-578f-4685-8314-7cd1f8ee0029'
+);

@@ -6,6 +6,7 @@ import ProductsSection from '../sections/Products/ProductsSection'
 import Footer from '../components/layout/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import CartDrawer from '../components/CartDrawer'
+import PaymentResultModal from '../components/PaymentResultModal'
 
 export default function HomePage() {
   return (
@@ -25,6 +26,7 @@ export default function HomePage() {
       <Footer />
       <WhatsAppButton />
       <CartDrawer />
+      <PaymentResultModal />
     </>
   )
 }
