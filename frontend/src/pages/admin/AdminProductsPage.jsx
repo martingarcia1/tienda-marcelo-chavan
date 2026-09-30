@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, Tag } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../../store/authStore'
 import { precioFinal, etiquetaOferta, tieneOfertaVigente } from '../../lib/pricing'
+import { flattenCategoryTree } from '../../lib/categoryTree'
 import AdminProductFormModal from './AdminProductFormModal'
 import AdminOfferModal from './AdminOfferModal'
 
@@ -42,6 +43,8 @@ export default function AdminProductsPage() {
   }
 
   useEffect(() => { load() }, [])
+
+  const categoryPaths = Object.fromEntries(flattenCategoryTree(categories).map((c) => [c.id, c.path]))
 
   async function handleDelete(product) {
     if (!confirm(`¿Eliminar "${product.name}"? Esta acción no se puede deshacer.`)) return
@@ -113,7 +116,7 @@ export default function AdminProductsPage() {
 
                 <div className="flex-1 min-w-0">
                   <p className="font-serif text-sm truncate" style={{ color: 'var(--navy)' }}>{p.name}</p>
-                  <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>{p.category?.name}</p>
+                  <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>{categoryPaths[p.category_id] ?? p.category?.name}</p>
                 </div>
 
                 <div className="w-28 text-right">

@@ -1,32 +1,16 @@
-import AnnouncementBar from '../components/layout/AnnouncementBar'
-import Navbar from '../components/layout/Navbar'
 import HeroSection from '../sections/Hero/HeroSection'
 import AboutSection from '../sections/About/AboutSection'
-import ProductsSection from '../sections/Products/ProductsSection'
-import Footer from '../components/layout/Footer'
-import WhatsAppButton from '../components/WhatsAppButton'
-import CartDrawer from '../components/CartDrawer'
-import PaymentResultModal from '../components/PaymentResultModal'
+import CategoryCoversSection from '../sections/Products/CategoryCoversSection'
+import { useDocumentTitle } from '../hooks/useCatalog'
 
 export default function HomePage() {
+  useDocumentTitle(null)
+
   return (
     <>
-      {/* Header sticky (announcement + navbar pegados juntos) */}
-      <div className="sticky top-0 z-50">
-        <AnnouncementBar />
-        <Navbar />
-      </div>
-
-      <main>
-        <HeroSection />
-        <AboutSection />
-        <ProductsSection />
-      </main>
-
-      <Footer />
-      <WhatsAppButton />
-      <CartDrawer />
-      <PaymentResultModal />
+      <HeroSection />
+      <AboutSection />
+      <CategoryCoversSection />
     </>
   )
 }

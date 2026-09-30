@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X, ShoppingBag } from 'lucide-react'
 import logo from '../../assets/logo.jpg'
 import { useCartStore, selectTotalItems } from '../../store/cartStore'
+import { useSectionNav } from '../../hooks/useSectionNav'
 
 function CartButton() {
   const openCart = useCartStore((s) => s.openCart)
@@ -39,6 +40,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const goToSection = useSectionNav()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -47,9 +49,8 @@ export default function Navbar() {
   }, [])
 
   const scrollTo = (e, href) => {
-    e.preventDefault()
     setMenuOpen(false)
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
+    goToSection(e, href)
   }
 
   return (

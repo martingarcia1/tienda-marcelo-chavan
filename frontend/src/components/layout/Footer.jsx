@@ -1,7 +1,10 @@
 import { Globe, MapPin, Phone } from 'lucide-react'
 import logo from '../../assets/logo.jpg'
+import { useSectionNav } from '../../hooks/useSectionNav'
 
 export default function Footer() {
+  const goToSection = useSectionNav()
+
   return (
     <footer
       style={{
@@ -44,10 +47,7 @@ export default function Footer() {
                 <a
                   key={label}
                   href={href}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
-                  }}
+                  onClick={(e) => goToSection(e, href)}
                   className="block text-[11px] tracking-widest font-elegant hover:opacity-60 transition-opacity"
                   style={{ color: 'var(--navy-dim)' }}
                 >

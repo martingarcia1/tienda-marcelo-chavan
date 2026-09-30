@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { X, Upload, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { slugify } from '../../lib/slugify'
+import { flattenCategoryTree } from '../../lib/categoryTree'
 
 function getImageUrl(storagePath) {
   return supabase.storage.from('product-images').getPublicUrl(storagePath).data.publicUrl
@@ -163,8 +164,8 @@ export default function AdminProductFormModal({ product, categories, onClose, on
               style={{ border: '1px solid var(--border)', backgroundColor: 'var(--bg-alt)', color: 'var(--navy)' }}
             >
               <option value="">Seleccionar...</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+              {flattenCategoryTree(categories).map((c) => (
+                <option key={c.id} value={c.id}>{c.path}{c.active ? '' : ' (oculta)'}</option>
               ))}
             </select>
           </div>
