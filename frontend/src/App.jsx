@@ -7,6 +7,9 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminProductsPage from './pages/admin/AdminProductsPage'
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage'
+import AdminOrdersPage from './pages/admin/AdminOrdersPage'
+import AdminDashboardPage from './pages/admin/AdminDashboardPage'
+import AdminCouponsPage from './pages/admin/AdminCouponsPage'
 
 function AppInner() {
   useLenis()
@@ -22,9 +25,12 @@ function AppInner() {
 
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Navigate to="/admin/productos" replace />} />
+        <Route index element={<Navigate to="/admin/tablero" replace />} />
+        <Route path="tablero" element={<AdminDashboardPage />} />
+        <Route path="pedidos" element={<AdminOrdersPage />} />
         <Route path="productos" element={<AdminProductsPage />} />
         <Route path="categorias" element={<AdminCategoriesPage />} />
+        <Route path="cupones" element={<AdminCouponsPage />} />
       </Route>
     </Routes>
   )

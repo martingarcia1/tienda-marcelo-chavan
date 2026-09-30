@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase'
 import RingSizeGuide from '../../components/RingSizeGuide'
 import ProductDetailModal from '../../components/ProductDetailModal'
 import { useCartStore } from '../../store/cartStore'
+import { precioFinal, etiquetaOferta, tieneOfertaVigente } from '../../lib/pricing'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
 
@@ -100,6 +101,16 @@ function ProductCard({ product, accentColor, delay, onOpenDetail }) {
           </div>
         )}
 
+        {/* Badge de oferta */}
+        {product.onSale && (
+          <div
+            className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8px] tracking-[0.2em] uppercase font-elegant"
+            style={{ backgroundColor: 'var(--teal)', color: '#FAFAF8' }}
+          >
+            {product.offerLabel}
+          </div>
+        )}
+
         {/* Overlay hover — agregar al carrito + consulta por WhatsApp. Solo aparece
             (y solo es clickeable) con hover real de mouse; en táctil, que no tiene
             hover, queda oculto e inerte para no taparle el toque a la tarjeta. */}
@@ -142,9 +153,16 @@ function ProductCard({ product, accentColor, delay, onOpenDetail }) {
         {product.name}
       </p>
       {product.price > 0 && (
-        <p className="text-xs font-elegant mt-1" style={{ color: 'var(--navy-dim)' }}>
-          {currency.format(product.price)}
-        </p>
+        product.onSale ? (
+          <p className="text-xs font-elegant mt-1 flex items-center gap-2">
+            <span style={{ color: 'var(--navy-xdim)', textDecoration: 'line-through' }}>{currency.format(product.listPrice)}</span>
+            <span style={{ color: 'var(--teal)' }}>{currency.format(product.price)}</span>
+          </p>
+        ) : (
+          <p className="text-xs font-elegant mt-1" style={{ color: 'var(--navy-dim)' }}>
+            {currency.format(product.price)}
+          </p>
+        )
       )}
       {/* Línea animada */}
       <div
@@ -186,7 +204,7 @@ export default function ProductsSection() {
         supabase.from('categories').select('name').eq('active', true).order('sort_order'),
         supabase
           .from('products')
-          .select('id, name, price, tag, description, category:categories(name), product_images(storage_path, sort_order)')
+          .select('id, name, price, tag, description, category:categories(name), product_images(storage_path, sort_order), discount_type, discount_value, discount_label, discount_from, discount_until')
           .eq('active', true)
           .order('name'),
       ])
@@ -203,10 +221,14 @@ export default function ProductsSection() {
       setProducts(
         prods.map((p) => {
           const images = [...(p.product_images || [])].sort((a, b) => a.sort_order - b.sort_order)
+          const enOferta = tieneOfertaVigente(p)
           return {
             id: p.id,
             name: p.name,
-            price: p.price,
+            listPrice: p.price,
+            price: enOferta ? precioFinal(p) : p.price,
+            onSale: enOferta,
+            offerLabel: enOferta ? etiquetaOferta(p) : null,
             cat: p.category?.name,
             tag: p.tag || '',
             description: p.description || '',

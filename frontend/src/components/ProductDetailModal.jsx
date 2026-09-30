@@ -81,9 +81,20 @@ export default function ProductDetailModal({ product, onClose }) {
               </h3>
 
               {product.price > 0 && (
-                <p className="font-serif mb-5" style={{ fontSize: '1.3rem', color: 'var(--navy)', fontStyle: 'italic' }}>
-                  {currency.format(product.price)}
-                </p>
+                product.onSale ? (
+                  <p className="font-serif mb-5 flex items-baseline gap-3" style={{ fontStyle: 'italic' }}>
+                    <span style={{ fontSize: '1rem', color: 'var(--navy-xdim)', textDecoration: 'line-through' }}>
+                      {currency.format(product.listPrice)}
+                    </span>
+                    <span style={{ fontSize: '1.3rem', color: 'var(--teal)' }}>
+                      {currency.format(product.price)}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="font-serif mb-5" style={{ fontSize: '1.3rem', color: 'var(--navy)', fontStyle: 'italic' }}>
+                    {currency.format(product.price)}
+                  </p>
+                )
               )}
 
               {product.description ? (

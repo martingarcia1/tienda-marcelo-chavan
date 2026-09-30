@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, Tag } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../../store/authStore'
+import { precioFinal, etiquetaOferta, tieneOfertaVigente } from '../../lib/pricing'
 import AdminProductFormModal from './AdminProductFormModal'
+import AdminOfferModal from './AdminOfferModal'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
 
@@ -19,13 +21,14 @@ export default function AdminProductsPage() {
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // null = cerrado, {} = nuevo, {...} = editar
   const [creatingNew, setCreatingNew] = useState(false)
+  const [offerFor, setOfferFor] = useState(null)
 
   async function load() {
     setLoading(true)
     const [{ data: prods, error: prodErr }, { data: cats, error: catErr }] = await Promise.all([
       supabase
         .from('products')
-        .select('id, name, slug, price, stock, active, category_id, category:categories(name), product_images(storage_path, sort_order)')
+        .select('id, name, slug, price, stock, active, category_id, category:categories(name), product_images(storage_path, sort_order), discount_type, discount_value, discount_label, discount_from, discount_until')
         .eq('created_by', user.id)
         .order('name'),
       supabase.from('categories').select('*').order('sort_order'),
@@ -113,9 +116,22 @@ export default function AdminProductsPage() {
                   <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>{p.category?.name}</p>
                 </div>
 
-                <p className="font-elegant text-sm w-24 text-right" style={{ color: 'var(--navy)' }}>
-                  {p.price > 0 ? currency.format(p.price) : '—'}
-                </p>
+                <div className="w-28 text-right">
+                  {tieneOfertaVigente(p) ? (
+                    <>
+                      <p className="font-elegant text-xs line-through" style={{ color: 'var(--navy-xdim)' }}>
+                        {currency.format(p.price)}
+                      </p>
+                      <p className="font-elegant text-sm" style={{ color: 'var(--teal)' }}>
+                        {currency.format(precioFinal(p))}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>
+                      {p.price > 0 ? currency.format(p.price) : '—'}
+                    </p>
+                  )}
+                </div>
                 <p className="font-elegant text-xs w-16 text-center" style={{ color: 'var(--navy-dim)' }}>
                   Stock: {p.stock}
                 </p>
@@ -129,6 +145,15 @@ export default function AdminProductsPage() {
                   {p.active ? 'Activo' : 'Oculto'}
                 </span>
 
+                <button
+                  onClick={() => setOfferFor(p)}
+                  aria-label="Oferta"
+                  className="p-2 transition-opacity hover:opacity-70"
+                  style={{ color: tieneOfertaVigente(p) ? 'var(--teal)' : 'var(--navy-dim)' }}
+                  title={tieneOfertaVigente(p) ? etiquetaOferta(p) : 'Crear oferta'}
+                >
+                  <Tag size={15} />
+                </button>
                 <button onClick={() => setEditing(p)} aria-label="Editar" className="p-2 transition-opacity hover:opacity-70" style={{ color: 'var(--gold)' }}>
                   <Pencil size={15} />
                 </button>
@@ -147,6 +172,14 @@ export default function AdminProductsPage() {
           categories={categories}
           onClose={handleModalClose}
           onSaved={handleSaved}
+        />
+      )}
+
+      {offerFor && (
+        <AdminOfferModal
+          product={offerFor}
+          onClose={() => setOfferFor(null)}
+          onSaved={() => { setOfferFor(null); load() }}
         />
       )}
     </div>

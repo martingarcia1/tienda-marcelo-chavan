@@ -1,11 +1,14 @@
 import { Navigate, NavLink, Outlet } from 'react-router-dom'
-import { LogOut, Package, Tag } from 'lucide-react'
+import { LogOut, Package, Tag, ClipboardList, LayoutDashboard, Ticket } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import logo from '../../assets/logo.jpg'
 
 const NAV_LINKS = [
+  { to: '/admin/tablero', label: 'Tablero', icon: LayoutDashboard },
+  { to: '/admin/pedidos', label: 'Pedidos', icon: ClipboardList },
   { to: '/admin/productos', label: 'Productos', icon: Package },
   { to: '/admin/categorias', label: 'Categorías', icon: Tag },
+  { to: '/admin/cupones', label: 'Cupones', icon: Ticket },
 ]
 
 export default function AdminLayout() {
