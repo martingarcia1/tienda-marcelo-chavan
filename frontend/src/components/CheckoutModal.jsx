@@ -1,11 +1,89 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, CreditCard, Store, Ticket } from 'lucide-react'
+import { X, CreditCard, Store, Ticket, Lock } from 'lucide-react'
 import { useCartStore, selectTotalPrice } from '../store/cartStore'
 import { supabase } from '../lib/supabase'
 import { whatsappHref } from './WhatsAppButton'
+import { ONLINE_PROVIDER, MARCAS, marcaSugerida, tokenizarTarjeta, prepararPayway } from '../lib/payway'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
+const RECARGO_CUOTAS = { 1: 0, 3: 0.1 }
+const inputStyle = { border: '1px solid var(--border)', backgroundColor: 'var(--bg-alt)', color: 'var(--navy)' }
+
+// Campos de tarjeta para Payway. Los atributos data-decidir son los que lee
+// su SDK para tokenizar; no tienen "name" para que nunca se envíen a otro lado.
+function CardFields({ marca, setMarca, cuotas, setCuotas }) {
+  const [numero, setNumero] = useState('')
+
+  useEffect(() => {
+    prepararPayway().catch(() => { /* el error se informa al intentar pagar */ })
+  }, [])
+
+  function onNumero(e) {
+    const v = e.target.value.replace(/[^\d ]/g, '')
+    setNumero(v)
+    const sugerida = marcaSugerida(v)
+    if (sugerida && v.replace(/\D/g, '').length >= 6) setMarca((m) => (m === 31 ? m : sugerida))
+  }
+
+  return (
+    <div className="space-y-4 p-4" style={{ border: '1px solid var(--border-gold)', backgroundColor: 'rgba(165,141,102,0.04)' }}>
+      <p className="flex items-center gap-2 font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>
+        <Lock size={12} style={{ color: 'var(--gold)' }} /> Los datos de tu tarjeta van directo a Payway, de forma segura.
+      </p>
+      <div>
+        <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Número de tarjeta</label>
+        <input data-decidir="card_number" inputMode="numeric" autoComplete="cc-number" value={numero} onChange={onNumero} placeholder="0000 0000 0000 0000" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Mes</label>
+          <input data-decidir="card_expiration_month" inputMode="numeric" autoComplete="cc-exp-month" maxLength={2} placeholder="MM" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+        </div>
+        <div>
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Año</label>
+          <input data-decidir="card_expiration_year" inputMode="numeric" autoComplete="cc-exp-year" maxLength={2} placeholder="AA" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+        </div>
+        <div>
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Código</label>
+          <input data-decidir="security_code" inputMode="numeric" autoComplete="cc-csc" maxLength={4} placeholder="CVV" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+        </div>
+      </div>
+      <div>
+        <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Nombre como figura en la tarjeta</label>
+        <input data-decidir="card_holder_name" autoComplete="cc-name" className="w-full px-3 py-2.5 font-elegant text-sm uppercase" style={inputStyle} />
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Documento</label>
+          <select data-decidir="card_holder_doc_type" defaultValue="dni" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle}>
+            <option value="dni">DNI</option>
+          </select>
+        </div>
+        <div className="col-span-2">
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Número de documento</label>
+          <input data-decidir="card_holder_doc_number" inputMode="numeric" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Tarjeta</label>
+          <select value={marca ?? ''} onChange={(e) => setMarca(Number(e.target.value))} className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle}>
+            <option value="" disabled>Elegí la tarjeta</option>
+            {MARCAS.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Cuotas</label>
+          <select value={cuotas} onChange={(e) => setCuotas(Number(e.target.value))} className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle}>
+            <option value={1}>1 pago</option>
+            <option value={3}>3 cuotas (+10%)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function mensajePedidoLocal(orderId, items, total, formaPago, cupon) {
   const lineas = items.map((i) => `• ${i.qty}x ${i.name}`)
@@ -21,7 +99,10 @@ export default function CheckoutModal({ open, onClose }) {
   const clearCart = useCartStore((s) => s.clearCart)
 
   const [form, setForm] = useState({ customer_name: '', customer_phone: '', customer_email: '' })
-  const [paymentMethod, setPaymentMethod] = useState('mercadopago')
+  const [paymentMethod, setPaymentMethod] = useState(ONLINE_PROVIDER)
+  const [marca, setMarca] = useState(null)
+  const [cuotas, setCuotas] = useState(1)
+  const isCard = paymentMethod === 'payway'
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [couponInput, setCouponInput] = useState('')
@@ -85,22 +166,52 @@ export default function CheckoutModal({ open, onClose }) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
+  // Mismo cálculo que el servidor (que es el que manda): base con cupón y
+  // efectivo, más el recargo de cuotas si paga con tarjeta en 3.
+  const base = preview ? preview.total : paymentMethod === 'efectivo_local' ? Math.round(total * 0.9) : total
+  const recargo = isCard ? Math.round(base * RECARGO_CUOTAS[cuotas]) : 0
+  const totalFinal = base + recargo
+
   async function handleSubmit(e) {
     e.preventDefault()
+    const formEl = e.currentTarget
     setError('')
 
     if (!form.customer_name.trim() || !form.customer_phone.trim()) {
       setError('Completá tu nombre y teléfono para continuar.')
       return
     }
+    if (isCard && !form.customer_email.trim()) {
+      setError('Para pagar con tarjeta necesitamos tu email.')
+      return
+    }
+    if (isCard && !marca) {
+      setError('Elegí qué tarjeta vas a usar.')
+      return
+    }
 
     setSubmitting(true)
+
+    // Con tarjeta: primero Payway devuelve un token de un solo uso.
+    let payway = null
+    if (isCard) {
+      try {
+        const { token, bin, deviceId } = await tokenizarTarjeta(formEl)
+        payway = { token, bin, payment_method_id: marca, device_id: deviceId }
+      } catch (err) {
+        setSubmitting(false)
+        setError(err.message)
+        return
+      }
+    }
+
     const { data, error: fnError } = await supabase.functions.invoke('create-order', {
       body: {
         ...form,
         payment_method: paymentMethod,
         coupon_code: appliedCoupon || null,
         items: cartPayload,
+        ...(isCard ? { installments: cuotas, payway } : {}),
       },
     })
     setSubmitting(false)
@@ -117,6 +228,12 @@ export default function CheckoutModal({ open, onClose }) {
     if (paymentMethod === 'mercadopago' && data.redirectUrl) {
       clearCart()
       window.location.href = data.redirectUrl
+      return
+    }
+
+    if (isCard && data.status === 'approved') {
+      clearCart()
+      window.location.href = `/?pago=exito&pedido=${data.orderId}`
       return
     }
 
@@ -187,7 +304,7 @@ export default function CheckoutModal({ open, onClose }) {
                   />
                 </div>
                 <div>
-                  <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Email (opcional)</label>
+                  <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>{isCard ? 'Email' : 'Email (opcional)'}</label>
                   <input
                     type="email"
                     value={form.customer_email}
@@ -203,19 +320,30 @@ export default function CheckoutModal({ open, onClose }) {
                 <div className="space-y-3">
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod('mercadopago')}
+                    onClick={() => setPaymentMethod(ONLINE_PROVIDER)}
                     className="w-full flex items-center gap-3 p-4 text-left transition-colors"
                     style={{
-                      border: `1px solid ${paymentMethod === 'mercadopago' ? 'var(--gold)' : 'var(--border)'}`,
-                      backgroundColor: paymentMethod === 'mercadopago' ? 'rgba(165,141,102,0.08)' : 'transparent',
+                      border: `1px solid ${paymentMethod === ONLINE_PROVIDER ? 'var(--gold)' : 'var(--border)'}`,
+                      backgroundColor: paymentMethod === ONLINE_PROVIDER ? 'rgba(165,141,102,0.08)' : 'transparent',
                     }}
                   >
                     <CreditCard size={18} style={{ color: 'var(--gold)' }} />
                     <div>
-                      <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>Pagar online con Mercado Pago</p>
-                      <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>Tarjeta, cuotas, dinero en cuenta</p>
+                      {ONLINE_PROVIDER === 'payway' ? (
+                        <>
+                          <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>Pagar online con tarjeta</p>
+                          <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>Crédito o débito · 1 pago o 3 cuotas · Payway</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>Pagar online con Mercado Pago</p>
+                          <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>Tarjeta, cuotas, dinero en cuenta</p>
+                        </>
+                      )}
                     </div>
                   </button>
+
+                  {isCard && <CardFields marca={marca} setMarca={setMarca} cuotas={cuotas} setCuotas={setCuotas} />}
 
                   <button
                     type="button"
@@ -306,14 +434,24 @@ export default function CheckoutModal({ open, onClose }) {
                       )}
                     </>
                   )}
+                  {recargo > 0 && (
+                    <div className="flex justify-between font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>
+                      <span>Recargo 3 cuotas (10%)</span><span>+{currency.format(recargo)}</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between pt-1">
                     <span className="font-elegant text-xs uppercase" style={{ letterSpacing: '0.2em', color: 'var(--navy-dim)' }}>
                       {!preview && paymentMethod === 'efectivo_local' ? 'Total con 10% off' : 'Total'}
                     </span>
                     <span className="font-serif" style={{ fontSize: '1.4rem', color: 'var(--navy)', fontStyle: 'italic' }}>
-                      {currency.format(preview ? preview.total : paymentMethod === 'efectivo_local' ? Math.round(total * 0.9) : total)}
+                      {currency.format(totalFinal)}
                     </span>
                   </div>
+                  {isCard && cuotas === 3 && (
+                    <p className="font-elegant text-xs text-right" style={{ color: 'var(--navy-dim)' }}>
+                      3 cuotas de {currency.format(Math.round(totalFinal / 3))}
+                    </p>
+                  )}
                 </div>
               )}
 

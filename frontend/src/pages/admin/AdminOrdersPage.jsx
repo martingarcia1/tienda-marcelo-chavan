@@ -14,6 +14,7 @@ const ESTADOS = {
 
 const FORMAS_PAGO = {
   mercadopago: 'Mercado Pago',
+  payway: 'Tarjeta (Payway)',
   efectivo_local: 'Efectivo (retiro)',
   transferencia_local: 'Transferencia (retiro)',
 }
@@ -30,7 +31,7 @@ export default function AdminOrdersPage() {
     setLoading(true)
     const { data, error: err } = await supabase
       .from('orders')
-      .select('id, customer_name, customer_phone, customer_email, payment_method, status, subtotal, discount_amount, coupon_code, coupon_discount, total, created_at')
+      .select('id, customer_name, customer_phone, customer_email, payment_method, status, subtotal, discount_amount, coupon_code, coupon_discount, installments, installments_surcharge, payway_payment_id, total, created_at')
       .order('created_at', { ascending: false })
     if (err) setError(err.message)
     else setOrders(data)
@@ -142,6 +143,8 @@ export default function AdminOrdersPage() {
                         Subtotal: {currency.format(o.subtotal)}
                         {o.coupon_code && <> · Cupón {o.coupon_code}: -{currency.format(o.coupon_discount)}</>}
                         {o.discount_amount - o.coupon_discount > 0 && <> · Efectivo: -{currency.format(o.discount_amount - o.coupon_discount)}</>}
+                        {o.installments > 1 && <> · {o.installments} cuotas (+{currency.format(o.installments_surcharge)})</>}
+                        {o.payway_payment_id && <><br />Operación Payway N° {o.payway_payment_id}</>}
                       </p>
                       <div className="space-y-1 mt-3">
                         {(itemsByOrder[o.id] || []).map((it) => (

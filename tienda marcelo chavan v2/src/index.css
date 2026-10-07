@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/* ── Lujo oscuro: negro cálido + cobre, tomado del cartel real del local ── */
+@layer base {
+  :root {
+    --ink:          #0c0a08;
+    --ink-2:        #13100d;
+    --ink-3:        #1b1713;
+    --ink-4:        #241f19;
+
+    --ivory:        #efe6da;
+    --ivory-dim:    rgba(239, 230, 218, 0.64);
+    --ivory-xdim:   rgba(239, 230, 218, 0.38);
+
+    --copper:       #dba36b;
+    --copper-soft:  #e0a06a;
+    --copper-deep:  #a85f31;
+    --copper-glow:  rgba(224, 160, 106, 0.32);
+
+    --line:         rgba(219, 163, 107, 0.14);
+    --line-strong:  rgba(219, 163, 107, 0.38);
+
+    --sale:         #8fbfb4;
+
+    color-scheme: dark;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    color: var(--ivory);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--copper-deep); color: var(--ivory); }
+
+  img { max-width: 100%; display: block; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@layer utilities {
+  .font-serif   { font-family: 'Cormorant Garamond', Georgia, serif; }
+  .font-sans    { font-family: 'Montserrat', Arial, sans-serif; }
+  .font-sign    { font-family: 'Cinzel', Georgia, serif; }
+  .font-script  { font-family: 'Pinyon Script', cursive; }
+
+  /* Rótulo chico en mayúsculas espaciadas */
+  .eyebrow {
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--copper);
+  }
+
+  .text-copper-shimmer {
+    background: linear-gradient(90deg, #a85f31 0%, #e0a06a 35%, #f5c896 50%, #e0a06a 65%, #a85f31 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 5s linear infinite;
+  }
+
+  /* Grano fotográfico muy sutil sobre los fondos oscuros */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .copper-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--copper) 0%, rgba(219, 163, 107, 0) 100%);
+  }
+
+  .link-line { position: relative; }
+  .link-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 1px;
+    background: var(--copper);
+    transition: width 0.4s ease;
+  }
+  .link-line:hover::after { width: 100%; }
+
+  .animate-marquee { animation: marquee 40s linear infinite; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-copper-shimmer, .animate-marquee { animation: none; }
+  html { scroll-behavior: auto; }
+}
