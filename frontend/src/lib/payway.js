@@ -7,22 +7,26 @@ const SANDBOX = (import.meta.env.VITE_PAYWAY_SANDBOX ?? 'true') === 'true'
 const API_URL = SANDBOX ? 'https://developers.decidir.com/api/v2' : 'https://ventasonline.payway.com.ar/api/v2'
 const SDK_URL = 'https://ventasonline.payway.com.ar/static/v2.6.4/decidir.js'
 
-// Medios de pago habilitados en el sitio de Payway del comercio (verificado
-// en sandbox el 2026-10-07: Amex y Naranja figuran como no habilitados).
-export const MARCAS = [
-  { id: 1, label: 'Visa crédito' },
-  { id: 31, label: 'Visa débito' },
-  { id: 104, label: 'Mastercard crédito' },
-  { id: 63, label: 'Cabal' },
-]
+// Códigos de medio de pago de Payway por marca y tipo (tabla oficial de
+// "Medios de pago"). Payway valida que coincidan con los primeros dígitos de
+// la tarjeta: por eso la marca se detecta sola y el cliente elige el tipo
+// (por ejemplo, la tarjeta de Mercado Pago es una Mastercard prepaga = 116).
+export const MARCAS = {
+  visa: { label: 'Visa', tipos: { credito: 1, debito: 31 } },
+  mastercard: { label: 'Mastercard', tipos: { credito: 104, debito: 105, prepaga: 116 } },
+  maestro: { label: 'Maestro', tipos: { debito: 106 } },
+  cabal: { label: 'Cabal', tipos: { credito: 63, debito: 108 } },
+}
 
-// Preselección según los primeros dígitos (el débito no se distingue por el
-// número: si el cliente eligió débito, se respeta su elección).
-export function marcaSugerida(numero) {
+export const TIPOS = { credito: 'Crédito', debito: 'Débito', prepaga: 'Prepaga' }
+
+export function marcaDe(numero) {
   const n = numero.replace(/\D/g, '')
-  if (/^(6042|6043|6271|589657)/.test(n)) return 63
-  if (/^(5[1-5]|2[2-7])/.test(n)) return 104
-  if (/^4/.test(n)) return 1
+  if (n.length < 2) return null
+  if (/^(6042|6043|6271|5896)/.test(n)) return 'cabal'
+  if (/^(5018|5020|5038|5893|6304|6759|676[1-3])/.test(n)) return 'maestro'
+  if (/^(5[1-5]|2[2-7])/.test(n)) return 'mastercard'
+  if (/^4/.test(n)) return 'visa'
   return null
 }
 

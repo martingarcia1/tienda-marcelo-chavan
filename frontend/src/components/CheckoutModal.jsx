@@ -4,7 +4,7 @@ import { X, CreditCard, Store, Ticket, Lock } from 'lucide-react'
 import { useCartStore, cartTotal } from '../store/cartStore'
 import { supabase } from '../lib/supabase'
 import { whatsappHref } from '../lib/whatsapp'
-import { MARCAS, marcaSugerida, tokenizarTarjeta, prepararPayway } from '../lib/payway'
+import { MARCAS, TIPOS, marcaDe, tokenizarTarjeta, prepararPayway } from '../lib/payway'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
 const RECARGO_CUOTAS = { 1: 0, 3: 0.1 }
@@ -12,6 +12,7 @@ const inputStyle = { border: '1px solid var(--border)', backgroundColor: 'var(--
 
 // Campos de tarjeta para Payway. Los atributos data-decidir son los que lee
 // su SDK para tokenizar; no tienen "name" para que nunca se envíen a otro lado.
+// marca: { brand, tipo } — el código de Payway sale de MARCAS[brand].tipos[tipo].
 function CardFields({ localSlug, marca, setMarca, cuotas, setCuotas }) {
   const [numero, setNumero] = useState('')
 
@@ -22,9 +23,20 @@ function CardFields({ localSlug, marca, setMarca, cuotas, setCuotas }) {
   function onNumero(e) {
     const v = e.target.value.replace(/[^\d ]/g, '')
     setNumero(v)
-    const sugerida = marcaSugerida(v)
-    if (sugerida && v.replace(/\D/g, '').length >= 6) setMarca((m) => (m === 31 ? m : sugerida))
+    const brand = marcaDe(v)
+    setMarca((m) => {
+      if (!brand) return { brand: null, tipo: m.tipo }
+      const tipos = Object.keys(MARCAS[brand].tipos)
+      return { brand, tipo: tipos.includes(m.tipo) ? m.tipo : tipos[0] }
+    })
   }
+
+  const tiposDisponibles = marca.brand ? Object.keys(MARCAS[marca.brand].tipos) : Object.keys(TIPOS)
+  const soloUnPago = marca.tipo !== 'credito'
+
+  useEffect(() => {
+    if (soloUnPago && cuotas !== 1) setCuotas(1)
+  }, [soloUnPago, cuotas, setCuotas])
 
   return (
     <div className="space-y-4 p-4" style={{ border: '1px solid var(--border-gold)', backgroundColor: 'rgba(219,163,107,0.05)' }}>
@@ -67,20 +79,26 @@ function CardFields({ localSlug, marca, setMarca, cuotas, setCuotas }) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Tarjeta</label>
-          <select value={marca ?? ''} onChange={(e) => setMarca(Number(e.target.value))} className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle}>
-            <option value="" disabled>Elegí la tarjeta</option>
-            {MARCAS.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+          <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>
+            Tipo de tarjeta{marca.brand ? ` · ${MARCAS[marca.brand].label}` : ''}
+          </label>
+          <select value={marca.tipo} onChange={(e) => setMarca((m) => ({ ...m, tipo: e.target.value }))} className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle}>
+            {tiposDisponibles.map((t) => <option key={t} value={t}>{TIPOS[t]}</option>)}
           </select>
         </div>
         <div>
           <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Cuotas</label>
-          <select value={cuotas} onChange={(e) => setCuotas(Number(e.target.value))} className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle}>
+          <select value={cuotas} onChange={(e) => setCuotas(Number(e.target.value))} disabled={soloUnPago} className="w-full px-3 py-2.5 font-elegant text-sm disabled:opacity-60" style={inputStyle}>
             <option value={1}>1 pago</option>
-            <option value={3}>3 cuotas (+10%)</option>
+            {!soloUnPago && <option value={3}>3 cuotas (+10%)</option>}
           </select>
         </div>
       </div>
+      {numero.replace(/\D/g, '').length >= 6 && !marca.brand && (
+        <p className="font-elegant text-xs" style={{ color: 'var(--teal)' }}>
+          No reconocemos esta tarjeta. Aceptamos Visa, Mastercard, Maestro y Cabal.
+        </p>
+      )}
     </div>
   )
 }
@@ -107,7 +125,7 @@ export default function CheckoutModal({ open, onClose, local }) {
 
   const [form, setForm] = useState({ customer_name: '', customer_phone: '', customer_email: '' })
   const [paymentMethod, setPaymentMethod] = useState(ONLINE_PROVIDER)
-  const [marca, setMarca] = useState(null)
+  const [marca, setMarca] = useState({ brand: null, tipo: 'credito' })
   const [cuotas, setCuotas] = useState(1)
   const isCard = paymentMethod === 'payway'
   const [submitting, setSubmitting] = useState(false)
@@ -192,8 +210,9 @@ export default function CheckoutModal({ open, onClose, local }) {
       setError('Para pagar con tarjeta necesitamos tu email.')
       return
     }
-    if (isCard && !marca) {
-      setError('Elegí qué tarjeta vas a usar.')
+    const paymentMethodId = marca.brand ? MARCAS[marca.brand].tipos[marca.tipo] : null
+    if (isCard && !paymentMethodId) {
+      setError('Revisá el número de tarjeta: aceptamos Visa, Mastercard, Maestro y Cabal.')
       return
     }
 
@@ -204,7 +223,7 @@ export default function CheckoutModal({ open, onClose, local }) {
     if (isCard) {
       try {
         const { token, bin, deviceId } = await tokenizarTarjeta(formEl, local.slug)
-        payway = { token, bin, payment_method_id: marca, device_id: deviceId }
+        payway = { token, bin, payment_method_id: paymentMethodId, device_id: deviceId }
       } catch (err) {
         setSubmitting(false)
         setError(err.message)
