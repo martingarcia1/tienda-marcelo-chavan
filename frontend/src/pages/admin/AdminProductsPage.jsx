@@ -29,7 +29,7 @@ export default function AdminProductsPage() {
     const [{ data: prods, error: prodErr }, { data: cats, error: catErr }] = await Promise.all([
       supabase
         .from('products')
-        .select('id, name, slug, price, stock, active, category_id, category:categories(name), product_images(storage_path, sort_order), discount_type, discount_value, discount_label, discount_from, discount_until')
+        .select('id, name, slug, price, stock, tag, description, active, category_id, category:categories(name), product_images(storage_path, sort_order), discount_type, discount_value, discount_label, discount_from, discount_until')
         .eq('created_by', user.id)
         .order('name'),
       supabase.from('categories').select('*').order('sort_order'),
