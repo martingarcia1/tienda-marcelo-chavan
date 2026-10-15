@@ -53,6 +53,9 @@ export const LOCALES = [
     direccion: 'Muñecas 132, Galería Áncel, Local 9',
     ciudad: 'San Miguel de Tucumán',
     mapsQuery: 'Galería Áncel Local 9, Muñecas 132, San Miguel de Tucumán',
+    // Secciones principales que se muestran siempre, en este orden, aunque
+    // todavía no tengan piezas (con 'Próximamente').
+    seccionesDestacadas: ['plata-925', 'plata-925-dorada', 'acero', 'perlas'],
     puntosRetiro: [
       { id: 'galeria-ancel-9', nombre: 'Galería Áncel, Local 9', direccion: 'Muñecas 132, San Miguel de Tucumán' },
       { id: 'yerba-buena', nombre: 'Yerba Buena', direccion: 'Av. Aconquija 688, Local 7, Yerba Buena' },

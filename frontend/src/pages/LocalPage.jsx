@@ -179,24 +179,28 @@ function LocalPage({ slug }) {
           {loading && <p className="font-sans text-sm py-16 text-center" style={{ color: 'var(--ivory-dim)' }}>Cargando la vidriera...</p>}
           {error && <p className="font-sans text-sm py-16 text-center" style={{ color: 'var(--ivory-dim)' }}>No pudimos cargar la vidriera. Probá recargar la página.</p>}
 
-          {vidriera && vidriera.products.length === 0 && (
+          {vidriera && vidriera.products.length === 0 && raices.length === 0 && (
             <div className="text-center py-16">
               <p className="font-serif italic" style={{ fontSize: '1.6rem', color: 'var(--ivory)' }}>Estamos preparando esta vidriera</p>
               <p className="font-sans mt-3 text-sm" style={{ color: 'var(--ivory-dim)' }}>Consultanos por WhatsApp: tenemos piezas en el local que todavía no están publicadas.</p>
             </div>
           )}
 
-          {vidriera && vidriera.products.length > 0 && (
+          {vidriera && (vidriera.products.length > 0 || raices.length > 0) && (
             <>
               {raices.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 mb-20">
                   {raices.map((c, i) => <CategoryTile key={c.id} localSlug={local.slug} category={c} delay={i} />)}
                 </div>
               )}
-              <p className="eyebrow mb-10">Todas las piezas · {vidriera.products.length}</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12">
-                {vidriera.products.map((p, i) => <ProductCard key={p.id} product={p} local={local} delay={i} />)}
-              </div>
+              {vidriera.products.length > 0 && (
+                <>
+                  <p className="eyebrow mb-10">Todas las piezas · {vidriera.products.length}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12">
+                    {vidriera.products.map((p, i) => <ProductCard key={p.id} product={p} local={local} delay={i} />)}
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

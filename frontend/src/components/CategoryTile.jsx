@@ -31,7 +31,7 @@ export default function CategoryTile({ localSlug, category, delay = 0 }) {
           </p>
           <div className="flex items-center justify-between mt-3">
             <span className="font-sans" style={{ fontSize: '0.56rem', letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--ivory-dim)' }}>
-              {category.count} {category.count === 1 ? 'pieza' : 'piezas'}
+              {category.count === 0 ? 'Próximamente' : `${category.count} ${category.count === 1 ? 'pieza' : 'piezas'}`}
             </span>
             <ArrowRight size={14} className="transition-transform duration-500 group-hover:translate-x-1" style={{ color: 'var(--copper)' }} />
           </div>

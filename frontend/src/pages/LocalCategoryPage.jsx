@@ -75,7 +75,8 @@ export default function LocalCategoryPage() {
           </div>
         ) : (
           <div className="text-center py-20">
-            <p className="font-serif italic" style={{ fontSize: '1.6rem', color: 'var(--ivory)' }}>No hay piezas publicadas en esta categoría</p>
+            <p className="font-serif italic" style={{ fontSize: '1.6rem', color: 'var(--ivory)' }}>Próximamente</p>
+            <p className="font-sans mt-3 text-sm" style={{ color: 'var(--ivory-dim)' }}>Estamos cargando las piezas de esta sección. Mientras tanto, consultanos por WhatsApp.</p>
             <Link to={`/espacios/${local.slug}#vidriera`} className="inline-block mt-6 font-sans" style={{ fontSize: '0.62rem', letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--copper)' }}>
               Ver la vidriera completa
             </Link>

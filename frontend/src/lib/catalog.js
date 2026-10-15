@@ -97,14 +97,28 @@ export function productsInBranch(catalog, localSlug, categoryId) {
 
 // Hijas de `parentId` (null = principales) que tienen piezas de este local,
 // con su portada: la foto de la categoría o, si no tiene, la de su primera pieza.
+// Las ramas de las secciones destacadas del local se muestran siempre (vacías
+// = "Próximamente"), y las principales destacadas van primero en su orden.
 export function categoriesOfLocal(catalog, localSlug, parentId = null) {
-  return catalog.categories
+  const destacadas = LOCALES.find((l) => l.slug === localSlug)?.seccionesDestacadas || []
+  const byId = Object.fromEntries(catalog.categories.map((c) => [c.id, c]))
+  const raizDe = (c) => {
+    let r = c
+    while (r.parentId && byId[r.parentId]) r = byId[r.parentId]
+    return r.slug
+  }
+
+  const lista = catalog.categories
     .filter((c) => c.parentId === parentId)
     .map((c) => {
       const products = productsInBranch(catalog, localSlug, c.id)
       return { ...c, count: products.length, cover: c.coverUrl || products.find((p) => p.img)?.img || null }
     })
-    .filter((c) => c.count > 0)
+    .filter((c) => c.count > 0 || destacadas.includes(raizDe(c)))
+
+  if (parentId !== null) return lista
+  const orden = (c) => (destacadas.includes(c.slug) ? destacadas.indexOf(c.slug) : destacadas.length)
+  return lista.sort((a, b) => orden(a) - orden(b))
 }
 
 export function categoryChain(catalog, categoryId) {
