@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowDown, ArrowRight, MapPin, Clock, ShoppingBag } from 'lucide-react'
@@ -8,7 +7,8 @@ import { WhatsAppIcon } from '../components/WhatsAppFloat'
 import { LOCALES, getLocal, nombresDuenos } from '../lib/locales'
 import { whatsappHref, mapsHref } from '../lib/whatsapp'
 import { useCatalog, useDocumentTitle } from '../lib/hooks'
-import { withModo } from '../lib/catalog'
+import { withModo, categoriesOfLocal } from '../lib/catalog'
+import CategoryTile from '../components/CategoryTile'
 import NotFoundPage from './NotFoundPage'
 
 const ease = [0.22, 0.61, 0.36, 1]
@@ -26,14 +26,13 @@ export default function LocalPageRoute() {
 function LocalPage({ slug }) {
   const { catalog, loading, error } = useCatalog()
   const local = withModo(getLocal(slug), catalog)
-  const [seccion, setSeccion] = useState(null)
   useDocumentTitle(local?.nombre)
 
   if (!local) return <NotFoundPage />
 
   const vidriera = catalog?.vidrieras[local.slug]
   const cover = vidriera?.products.find((p) => p.img)?.img
-  const visibles = seccion ? vidriera?.secciones.find((s) => s.slug === seccion)?.products || [] : vidriera?.products || []
+  const raices = catalog && local ? categoriesOfLocal(catalog, local.slug) : []
   const otros = LOCALES.filter((l) => l.slug !== local.slug)
 
   return (
@@ -189,30 +188,14 @@ function LocalPage({ slug }) {
 
           {vidriera && vidriera.products.length > 0 && (
             <>
-              {vidriera.secciones.length > 1 && (
-                <div className="flex flex-wrap gap-2 mb-12">
-                  {[{ slug: null, label: 'Todo', products: vidriera.products }, ...vidriera.secciones].map((s) => {
-                    const active = seccion === s.slug
-                    return (
-                      <button
-                        key={s.slug ?? 'todo'}
-                        onClick={() => setSeccion(s.slug)}
-                        className="px-5 py-2 font-sans transition-all duration-300"
-                        style={{
-                          fontSize: '0.58rem', letterSpacing: '0.26em', textTransform: 'uppercase',
-                          backgroundColor: active ? 'var(--copper)' : 'transparent',
-                          color: active ? 'var(--on-copper)' : 'var(--ivory-dim)',
-                          border: `1px solid ${active ? 'var(--copper)' : 'var(--line)'}`,
-                        }}
-                      >
-                        {s.label} <span style={{ opacity: 0.6 }}>· {s.products.length}</span>
-                      </button>
-                    )
-                  })}
+              {raices.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 mb-20">
+                  {raices.map((c, i) => <CategoryTile key={c.id} localSlug={local.slug} category={c} delay={i} />)}
                 </div>
               )}
-              <div key={seccion ?? 'todo'} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12">
-                {visibles.map((p, i) => <ProductCard key={p.id} product={p} local={local} delay={i} />)}
+              <p className="eyebrow mb-10">Todas las piezas · {vidriera.products.length}</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12">
+                {vidriera.products.map((p, i) => <ProductCard key={p.id} product={p} local={local} delay={i} />)}
               </div>
             </>
           )}

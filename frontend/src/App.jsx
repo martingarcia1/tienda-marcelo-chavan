@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import LocalPage from './pages/LocalPage'
 import ProductPage from './pages/ProductPage'
+import LocalCategoryPage from './pages/LocalCategoryPage'
 import NotFoundPage from './pages/NotFoundPage'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminLayout from './pages/admin/AdminLayout'
@@ -24,6 +25,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/espacios/:slug" element={<LocalPage />} />
+          <Route path="/espacios/:slug/categoria/:catSlug" element={<LocalCategoryPage />} />
           <Route path="/espacios/:slug/producto/:productSlug" element={<ProductPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

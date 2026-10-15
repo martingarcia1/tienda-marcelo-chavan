@@ -6,7 +6,7 @@ import { WhatsAppIcon } from '../components/WhatsAppFloat'
 import { getLocal } from '../lib/locales'
 import { whatsappHref, mapsHref } from '../lib/whatsapp'
 import { useCatalog, useDocumentTitle, currency } from '../lib/hooks'
-import { withModo } from '../lib/catalog'
+import { withModo, categoryChain } from '../lib/catalog'
 import { useCartStore } from '../store/cartStore'
 import NotFoundPage from './NotFoundPage'
 
@@ -34,8 +34,9 @@ function ProductPage({ localSlug, productSlug }) {
   if (error) return <div className="min-h-[70vh] pt-40 text-center font-sans text-sm" style={{ color: 'var(--ivory-dim)' }}>No pudimos cargar la pieza. Probá recargar la página.</div>
   if (!product) return <NotFoundPage />
 
-  const seccion = vidriera.secciones.find((s) => s.products.some((p) => p.id === product.id))
-  const related = (seccion?.products || []).filter((p) => p.id !== product.id).slice(0, 4)
+  const chain = categoryChain(catalog, product.categoryId)
+  const categoria = chain[chain.length - 1]
+  const related = vidriera.products.filter((p) => p.categoryId === product.categoryId && p.id !== product.id).slice(0, 4)
   const image = product.images[active] || product.img
   const puedeComprar = local.modo === 'online' && product.price > 0
   const sinStock = product.stock <= 0
@@ -54,7 +55,12 @@ function ProductPage({ localSlug, productSlug }) {
           <Link to="/" className="hover:text-[var(--copper)] transition-colors">Inicio</Link>
           <span>/</span>
           <Link to={`/espacios/${local.slug}`} className="hover:text-[var(--copper)] transition-colors">{local.nombre}</Link>
-          {seccion && <><span>/</span><span>{seccion.label}</span></>}
+          {chain.map((c) => (
+            <span key={c.id} className="flex gap-2">
+              <span>/</span>
+              <Link to={`/espacios/${local.slug}/categoria/${c.slug}`} className="hover:text-[var(--copper)] transition-colors">{c.name}</Link>
+            </span>
+          ))}
         </nav>
 
         <div className="grid md:grid-cols-12 gap-12 md:gap-16">
@@ -79,7 +85,7 @@ function ProductPage({ localSlug, productSlug }) {
           </div>
 
           <div className="md:col-span-5 flex flex-col">
-            <p className="eyebrow">{seccion?.label || local.rubro}</p>
+            <p className="eyebrow">{chain.length ? chain.map((c) => c.name).join(' · ') : local.rubro}</p>
             <h1 className="font-serif font-light mt-4" style={{ fontSize: 'clamp(2rem, 3.6vw, 3rem)', lineHeight: 1.12, color: 'var(--ivory)' }}>
               {product.name}
             </h1>
@@ -147,7 +153,7 @@ function ProductPage({ localSlug, productSlug }) {
       {related.length > 0 && (
         <section className="py-20 md:py-24" style={{ backgroundColor: 'var(--ink-2)', borderTop: '1px solid var(--line)' }}>
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <p className="eyebrow mb-10">También en {seccion.label}</p>
+            <p className="eyebrow mb-10">También en {categoria?.name ?? local.nombre}</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-12">
               {related.map((p, i) => <ProductCard key={p.id} product={p} local={local} delay={i} />)}
             </div>
