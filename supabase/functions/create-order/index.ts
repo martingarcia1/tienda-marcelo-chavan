@@ -48,6 +48,23 @@ const DESCUENTO_EFECTIVO = 0.10
 // Política del local: 1 pago a precio de lista, 3 cuotas con 10% de recargo.
 const RECARGO_CUOTAS: Record<number, number> = { 1: 0, 3: 0.10 }
 const FORMAS_LOCAL = ['efectivo_local', 'transferencia_local']
+// En los locales de la v2 se paga online o en efectivo al retirar.
+const FORMAS_LOCAL_V2 = ['efectivo_local']
+
+// Envío a domicilio: costo fijo, solo dentro del radio de las 6 avenidas
+// principales de San Miguel de Tucumán (el cliente lo confirma al comprar).
+const COSTO_ENVIO = 10000
+
+// Puntos de retiro de cada local (mismos ids que frontend/src/lib/locales.js).
+const PUNTOS_RETIRO: Record<string, Record<string, string>> = {
+  'galeria-ancel-9': {
+    'galeria-ancel-9': 'Galería Áncel, Local 9 — Muñecas 132, San Miguel de Tucumán',
+    'yerba-buena': 'Av. Aconquija 688, Local 7 — Yerba Buena',
+  },
+  'peatonal-mendoza': {
+    'peatonal-mendoza': 'Peatonal Mendoza 612 — San Miguel de Tucumán',
+  },
+}
 
 function jsonOk(data: unknown) {
   return new Response(JSON.stringify(data), {
@@ -98,7 +115,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { customer_name, customer_phone, customer_email, payment_method, items, coupon_code, dry_run, installments: cuotasPedidas, payway, local_slug } = await req.json()
+    const { customer_name, customer_phone, customer_email, payment_method, items, coupon_code, dry_run, installments: cuotasPedidas, payway, local_slug, delivery_method, pickup_point, shipping_address } = await req.json()
 
     // dry_run: solo calcula totales (para mostrar el cupón aplicado en el checkout)
     // sin crear el pedido, así que no exige nombre/teléfono.
@@ -122,10 +139,28 @@ Deno.serve(async (req) => {
       }
       local = data
     }
-    const formasDePago = local ? [local.payment_provider!, ...FORMAS_LOCAL] : [...PAYMENT_PROVIDERS, ...FORMAS_LOCAL]
+    const formasDePago = local ? [local.payment_provider!, ...FORMAS_LOCAL_V2] : [...PAYMENT_PROVIDERS, ...FORMAS_LOCAL]
     if (!formasDePago.includes(payment_method)) {
       return jsonError('Forma de pago inválida.', 400)
     }
+    // Entrega (solo en los locales de la v2).
+    const envio = Boolean(local) && delivery_method === 'envio'
+    const puntos = local ? PUNTOS_RETIRO[local.slug] ?? {} : {}
+    let puntoRetiro: string | null = null
+    if (local) {
+      if (!['envio', 'retiro'].includes(delivery_method)) return jsonError('Elegí envío a domicilio o retiro en el local.', 400)
+      if (envio) {
+        if (payment_method === 'efectivo_local') return jsonError('El efectivo es solo para retiro en el local. Para envío, pagá online.', 400)
+        if (!dry_run && (typeof shipping_address !== 'string' || shipping_address.trim().length < 8)) {
+          return jsonError('Completá la dirección de entrega.', 400)
+        }
+      } else {
+        puntoRetiro = typeof pickup_point === 'string' && puntos[pickup_point] ? pickup_point : null
+        if (!dry_run && !puntoRetiro) return jsonError('Elegí el punto de retiro.', 400)
+      }
+    }
+    const shippingCost = envio ? COSTO_ENVIO : 0
+
     const mpToken = credencial('MP_ACCESS_TOKEN', localSlug)
     const paywayKey = credencial('PAYWAY_PRIVATE_KEY', localSlug)
     if ((payment_method === 'mercadopago' && !mpToken) || (payment_method === 'payway' && !paywayKey)) {
@@ -226,10 +261,10 @@ Deno.serve(async (req) => {
     const efectivoDiscount = payment_method === 'efectivo_local' ? Math.round(afterCoupon * DESCUENTO_EFECTIVO) : 0
     const discountAmount = couponDiscount + efectivoDiscount
     const installmentsSurcharge = Math.round((subtotal - discountAmount) * RECARGO_CUOTAS[installments])
-    const total = subtotal - discountAmount + installmentsSurcharge
+    const total = subtotal - discountAmount + installmentsSurcharge + shippingCost
 
     if (dry_run) {
-      return jsonOk({ subtotal, couponCode, couponDiscount, efectivoDiscount, installments, installmentsSurcharge, total })
+      return jsonOk({ subtotal, couponCode, couponDiscount, efectivoDiscount, installments, installmentsSurcharge, shippingCost, total })
     }
 
     const { data: order, error: orderError } = await supabase
@@ -247,6 +282,10 @@ Deno.serve(async (req) => {
         installments,
         installments_surcharge: installmentsSurcharge,
         local_slug: localSlug,
+        delivery_method: envio ? 'envio' : 'retiro',
+        pickup_point: puntoRetiro ? puntos[puntoRetiro] : null,
+        shipping_address: envio ? shipping_address.trim() : null,
+        shipping_cost: shippingCost,
         total,
       })
       .select()
@@ -292,8 +331,8 @@ Deno.serve(async (req) => {
         purchase_totals: { currency: 'ARS', amount: amountCentavos },
         customer_in_site: { days_in_site: 0, is_guest: true, num_of_transactions: 0 },
         retail_transaction_data: {
-          ship_to: persona,
-          dispatch_method: 'click and collect',
+          ship_to: envio ? { ...persona, street1: shipping_address.trim().slice(0, 100) } : persona,
+          dispatch_method: envio ? 'domicilio' : 'click and collect',
           days_to_delivery: '0',
           coupon_code: couponCode ?? '',
           items: csItems,
@@ -345,7 +384,7 @@ Deno.serve(async (req) => {
     const origin = req.headers.get('origin') || 'http://localhost:5173'
     // Mercado Pago no acepta ítems negativos: si hay descuento, se cobra un
     // único ítem por el total ya descontado.
-    const mpItems = discountAmount > 0
+    const mpItems = discountAmount > 0 || installmentsSurcharge > 0 || shippingCost > 0
       ? [{
           title: `Pedido Marcelo Chavan N° ${order.id.slice(0, 8)}${couponCode ? ` (cupón ${couponCode})` : ''}`,
           quantity: 1,

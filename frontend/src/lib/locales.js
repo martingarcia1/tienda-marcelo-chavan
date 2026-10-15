@@ -33,6 +33,9 @@ export const LOCALES = [
     direccion: 'Peatonal Mendoza 612',
     ciudad: 'San Miguel de Tucumán',
     mapsQuery: 'Peatonal Mendoza 612, San Miguel de Tucumán',
+    puntosRetiro: [
+      { id: 'peatonal-mendoza', nombre: 'Peatonal Mendoza', direccion: 'Peatonal Mendoza 612, San Miguel de Tucumán' },
+    ],
     horario: 'Lunes a sábados',
     historia: [
       'Sobre la Peatonal Mendoza, en el pulso del centro tucumano, este espacio acerca la joyería de todos los días y la relojería japonesa a quien pasa y a quien vuelve.',
@@ -50,6 +53,10 @@ export const LOCALES = [
     direccion: 'Muñecas 132, Galería Áncel, Local 9',
     ciudad: 'San Miguel de Tucumán',
     mapsQuery: 'Galería Áncel Local 9, Muñecas 132, San Miguel de Tucumán',
+    puntosRetiro: [
+      { id: 'galeria-ancel-9', nombre: 'Galería Áncel, Local 9', direccion: 'Muñecas 132, San Miguel de Tucumán' },
+      { id: 'yerba-buena', nombre: 'Yerba Buena', direccion: 'Av. Aconquija 688, Local 7, Yerba Buena' },
+    ],
     horario: 'Lunes a sábados',
     historia: [
       'Galería Áncel 9 es la casa de la platería fina de Marcelo Chavan: una línea dedicada por completo a la plata, con pulseras, pendientes, anillos y collares.',
@@ -57,6 +64,10 @@ export const LOCALES = [
     ],
   },
 ]
+
+// Envío a domicilio: costo fijo (el servidor es el que lo cobra) y zona.
+export const COSTO_ENVIO = 10000
+export const ZONA_ENVIO = 'dentro del radio de las 6 avenidas principales de San Miguel de Tucumán'
 
 export function getLocal(slug) {
   return LOCALES.find((l) => l.slug === slug) || null

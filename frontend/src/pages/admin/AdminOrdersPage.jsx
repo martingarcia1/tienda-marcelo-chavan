@@ -33,7 +33,7 @@ export default function AdminOrdersPage() {
     setLoading(true)
     const { data, error: err } = await filtrarPorLocal(supabase
       .from('orders')
-      .select('id, customer_name, customer_phone, customer_email, payment_method, status, subtotal, discount_amount, coupon_code, coupon_discount, installments, installments_surcharge, payway_payment_id, local_slug, total, created_at'), local)
+      .select('id, customer_name, customer_phone, customer_email, payment_method, status, subtotal, discount_amount, coupon_code, coupon_discount, installments, installments_surcharge, payway_payment_id, local_slug, delivery_method, pickup_point, shipping_address, shipping_cost, total, created_at'), local)
       .order('created_at', { ascending: false })
     if (err) setError(err.message)
     else setOrders(data)
@@ -147,6 +147,10 @@ export default function AdminOrdersPage() {
                         {o.discount_amount - o.coupon_discount > 0 && <> · Efectivo: -{currency.format(o.discount_amount - o.coupon_discount)}</>}
                         {o.installments > 1 && <> · {o.installments} cuotas (+{currency.format(o.installments_surcharge)})</>}
                         {o.payway_payment_id && <><br />Operación Payway N° {o.payway_payment_id}</>}
+                        <br />
+                        {o.delivery_method === 'envio'
+                          ? <><strong style={{ color: 'var(--navy)' }}>Envío a domicilio</strong> (+{currency.format(o.shipping_cost)}): {o.shipping_address}</>
+                          : <><strong style={{ color: 'var(--navy)' }}>Retiro</strong>{o.pickup_point ? `: ${o.pickup_point}` : ' en el local'}</>}
                       </p>
                       <div className="space-y-1 mt-3">
                         {(itemsByOrder[o.id] || []).map((it) => (

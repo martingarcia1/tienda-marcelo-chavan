@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, CreditCard, Store, Ticket, Lock } from 'lucide-react'
+import { X, CreditCard, Store, Ticket, Lock, Truck, MapPin, Banknote } from 'lucide-react'
 import { useCartStore, cartTotal } from '../store/cartStore'
 import { supabase } from '../lib/supabase'
 import { whatsappHref } from '../lib/whatsapp'
+import { COSTO_ENVIO, ZONA_ENVIO } from '../lib/locales'
 import { MARCAS, TIPOS, marcaDe, tokenizarTarjeta, prepararPayway } from '../lib/payway'
 
 const currency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
@@ -103,12 +104,12 @@ function CardFields({ localSlug, marca, setMarca, cuotas, setCuotas }) {
   )
 }
 
-function mensajePedidoLocal(orderId, items, total, formaPago, cupon, localNombre) {
+function mensajePedidoLocal(orderId, items, total, formaPago, cupon, localNombre, puntoRetiro) {
   const lineas = items.map((i) => `• ${i.qty}x ${i.name}`)
-  const formaPagoTexto = formaPago === 'efectivo_local' ? 'Efectivo (10% off)' : 'Transferencia'
+  const formaPagoTexto = 'Efectivo al retirar (10% off)'
   const cuponLinea = cupon ? `\nCupón: ${cupon}` : ''
   const totalLinea = total > 0 ? `\nTotal: ${currency.format(total)}` : ''
-  return `Hola! Quiero retirar y pagar en ${localNombre} este pedido (N° ${orderId.slice(0, 8)}):\n\n${lineas.join('\n')}${cuponLinea}${totalLinea}\nForma de pago: ${formaPagoTexto}`
+  return `Hola! Quiero retirar y pagar en ${puntoRetiro ? puntoRetiro.nombre + ' (' + puntoRetiro.direccion + ')' : localNombre} este pedido (N° ${orderId.slice(0, 8)}):\n\n${lineas.join('\n')}${cuponLinea}${totalLinea}\nForma de pago: ${formaPagoTexto}`
 }
 
 const EMPTY = []
@@ -128,6 +129,16 @@ export default function CheckoutModal({ open, onClose, local }) {
   const [marca, setMarca] = useState({ brand: null, tipo: 'credito' })
   const [cuotas, setCuotas] = useState(1)
   const isCard = paymentMethod === 'payway'
+  const puntos = local.puntosRetiro || []
+  const [entrega, setEntrega] = useState('retiro')
+  const [punto, setPunto] = useState(puntos[0]?.id ?? null)
+  const [direccion, setDireccion] = useState({ calle: '', depto: '', referencias: '' })
+  const [confirmaZona, setConfirmaZona] = useState(false)
+
+  // El efectivo es solo para retiro: con envío se paga online.
+  useEffect(() => {
+    if (entrega === 'envio' && paymentMethod === 'efectivo_local') setPaymentMethod(ONLINE_PROVIDER)
+  }, [entrega, paymentMethod, ONLINE_PROVIDER])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [couponInput, setCouponInput] = useState('')
@@ -140,7 +151,7 @@ export default function CheckoutModal({ open, onClose, local }) {
 
   async function fetchPreview(code, method) {
     const { data, error: fnError } = await supabase.functions.invoke('create-order', {
-      body: { dry_run: true, local_slug: local.slug, coupon_code: code, payment_method: method, items: cartPayload },
+      body: { dry_run: true, local_slug: local.slug, delivery_method: 'retiro', coupon_code: code, payment_method: method, items: cartPayload },
     })
     if (fnError || data?.error) {
       let msg = data?.error
@@ -195,7 +206,15 @@ export default function CheckoutModal({ open, onClose, local }) {
   // efectivo, más el recargo de cuotas si paga con tarjeta en 3.
   const base = preview ? preview.total : paymentMethod === 'efectivo_local' ? Math.round(total * 0.9) : total
   const recargo = isCard ? Math.round(base * RECARGO_CUOTAS[cuotas]) : 0
-  const totalFinal = base + recargo
+  const envioCosto = entrega === 'envio' ? COSTO_ENVIO : 0
+  const totalFinal = base + recargo + envioCosto
+  const direccionTexto = [
+    direccion.calle.trim(),
+    direccion.depto.trim() && `Piso/depto ${direccion.depto.trim()}`,
+    direccion.referencias.trim() && `Ref: ${direccion.referencias.trim()}`,
+    'San Miguel de Tucumán',
+  ].filter(Boolean).join(' · ')
+  const puntoElegido = puntos.find((p) => p.id === punto)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -204,6 +223,18 @@ export default function CheckoutModal({ open, onClose, local }) {
 
     if (!form.customer_name.trim() || !form.customer_phone.trim()) {
       setError('Completá tu nombre y teléfono para continuar.')
+      return
+    }
+    if (entrega === 'envio' && direccion.calle.trim().length < 5) {
+      setError('Completá la calle y el número para el envío.')
+      return
+    }
+    if (entrega === 'envio' && !confirmaZona) {
+      setError(`Confirmá que la dirección está ${ZONA_ENVIO}.`)
+      return
+    }
+    if (entrega === 'retiro' && !punto) {
+      setError('Elegí dónde vas a retirar tu pedido.')
       return
     }
     if (isCard && !form.customer_email.trim()) {
@@ -237,6 +268,9 @@ export default function CheckoutModal({ open, onClose, local }) {
         payment_method: paymentMethod,
         coupon_code: appliedCoupon || null,
         local_slug: local.slug,
+        delivery_method: entrega,
+        pickup_point: entrega === 'retiro' ? punto : null,
+        shipping_address: entrega === 'envio' ? direccionTexto : null,
         items: cartPayload,
         ...(isCard ? { installments: cuotas, payway } : {}),
       },
@@ -265,7 +299,7 @@ export default function CheckoutModal({ open, onClose, local }) {
     }
 
     // Retiro en el local: abrimos WhatsApp con el resumen y cerramos todo.
-    const mensaje = mensajePedidoLocal(data.orderId, items, data.total, paymentMethod, appliedCoupon, local.nombre)
+    const mensaje = mensajePedidoLocal(data.orderId, items, data.total, paymentMethod, appliedCoupon, local.nombre, puntoElegido)
     window.open(whatsappHref(mensaje), '_blank')
     clearCart()
     onClose()
@@ -343,6 +377,71 @@ export default function CheckoutModal({ open, onClose, local }) {
               </div>
 
               <div>
+                <label className="block font-elegant mb-3 text-xs" style={{ color: 'var(--navy-dim)' }}>Entrega</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { id: 'retiro', Icon: Store, titulo: 'Retiro en el local', sub: 'Sin costo' },
+                    { id: 'envio', Icon: Truck, titulo: 'Envío a domicilio', sub: currency.format(COSTO_ENVIO) },
+                  ].map(({ id, Icon, titulo, sub }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setEntrega(id)}
+                      className="flex items-center gap-3 p-4 text-left transition-colors"
+                      style={{
+                        border: `1px solid ${entrega === id ? 'var(--gold)' : 'var(--border)'}`,
+                        backgroundColor: entrega === id ? 'rgba(219,163,107,0.1)' : 'transparent',
+                      }}
+                    >
+                      <Icon size={18} style={{ color: 'var(--gold)', flexShrink: 0 }} />
+                      <div>
+                        <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>{titulo}</p>
+                        <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>{sub}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {entrega === 'retiro' ? (
+                  <div className="mt-3 space-y-2">
+                    {puntos.map((p) => (
+                      <label key={p.id} className="flex items-start gap-3 p-3 cursor-pointer" style={{ border: `1px solid ${punto === p.id ? 'var(--border-gold)' : 'var(--border)'}` }}>
+                        <input type="radio" name="punto-retiro" checked={punto === p.id} onChange={() => setPunto(p.id)} className="mt-1" />
+                        <span>
+                          <span className="block font-elegant text-sm" style={{ color: 'var(--navy)' }}>{p.nombre}</span>
+                          <span className="flex items-center gap-1.5 font-elegant text-xs mt-0.5" style={{ color: 'var(--navy-dim)' }}>
+                            <MapPin size={11} style={{ color: 'var(--gold)' }} /> {p.direccion}
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                    <p className="font-elegant text-xs" style={{ color: 'var(--navy-xdim)' }}>Te avisamos por WhatsApp cuando tu pedido esté listo para retirar.</p>
+                  </div>
+                ) : (
+                  <div className="mt-3 space-y-3 p-4" style={{ border: '1px solid var(--border-gold)' }}>
+                    <div>
+                      <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Calle y número</label>
+                      <input type="text" value={direccion.calle} onChange={(e) => setDireccion((d) => ({ ...d, calle: e.target.value }))} placeholder="Ej: San Martín 850" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Piso / depto (opcional)</label>
+                        <input type="text" value={direccion.depto} onChange={(e) => setDireccion((d) => ({ ...d, depto: e.target.value }))} className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+                      </div>
+                      <div>
+                        <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Referencias (opcional)</label>
+                        <input type="text" value={direccion.referencias} onChange={(e) => setDireccion((d) => ({ ...d, referencias: e.target.value }))} placeholder="Entre calles, timbre…" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
+                      </div>
+                    </div>
+                    <label className="flex items-start gap-2 font-elegant text-xs cursor-pointer" style={{ color: 'var(--navy-dim)' }}>
+                      <input type="checkbox" checked={confirmaZona} onChange={(e) => setConfirmaZona(e.target.checked)} className="mt-0.5" />
+                      <span>Confirmo que la dirección está {ZONA_ENVIO}. Fuera de esa zona no hacemos envíos: elegí retiro en el local.</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div>
                 <label className="block font-elegant mb-3 text-xs" style={{ color: 'var(--navy-dim)' }}>Forma de pago</label>
                 <div className="space-y-3">
                   <button
@@ -372,37 +471,23 @@ export default function CheckoutModal({ open, onClose, local }) {
 
                   {isCard && <CardFields localSlug={local.slug} marca={marca} setMarca={setMarca} cuotas={cuotas} setCuotas={setCuotas} />}
 
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('efectivo_local')}
-                    className="w-full flex items-center gap-3 p-4 text-left transition-colors"
-                    style={{
-                      border: `1px solid ${paymentMethod === 'efectivo_local' ? 'var(--gold)' : 'var(--border)'}`,
-                      backgroundColor: paymentMethod === 'efectivo_local' ? 'rgba(219,163,107,0.1)' : 'transparent',
-                    }}
-                  >
-                    <Store size={18} style={{ color: 'var(--gold)' }} />
-                    <div>
-                      <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>Retirar en el local — Efectivo</p>
-                      <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>10% de descuento, te contactamos por WhatsApp</p>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('transferencia_local')}
-                    className="w-full flex items-center gap-3 p-4 text-left transition-colors"
-                    style={{
-                      border: `1px solid ${paymentMethod === 'transferencia_local' ? 'var(--gold)' : 'var(--border)'}`,
-                      backgroundColor: paymentMethod === 'transferencia_local' ? 'rgba(219,163,107,0.1)' : 'transparent',
-                    }}
-                  >
-                    <Store size={18} style={{ color: 'var(--gold)' }} />
-                    <div>
-                      <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>Retirar en el local — Transferencia</p>
-                      <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>Precio de lista, te contactamos por WhatsApp</p>
-                    </div>
-                  </button>
+                  {entrega === 'retiro' && (
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('efectivo_local')}
+                      className="w-full flex items-center gap-3 p-4 text-left transition-colors"
+                      style={{
+                        border: `1px solid ${paymentMethod === 'efectivo_local' ? 'var(--gold)' : 'var(--border)'}`,
+                        backgroundColor: paymentMethod === 'efectivo_local' ? 'rgba(219,163,107,0.1)' : 'transparent',
+                      }}
+                    >
+                      <Banknote size={18} style={{ color: 'var(--gold)' }} />
+                      <div>
+                        <p className="font-elegant text-sm" style={{ color: 'var(--navy)' }}>Efectivo al retirar</p>
+                        <p className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>10% de descuento · pagás en el punto de retiro</p>
+                      </div>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -464,6 +549,11 @@ export default function CheckoutModal({ open, onClose, local }) {
                   {recargo > 0 && (
                     <div className="flex justify-between font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>
                       <span>Recargo 3 cuotas (10%)</span><span>+{currency.format(recargo)}</span>
+                    </div>
+                  )}
+                  {envioCosto > 0 && (
+                    <div className="flex justify-between font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>
+                      <span>Envío a domicilio</span><span>+{currency.format(envioCosto)}</span>
                     </div>
                   )}
                   <div className="flex items-center justify-between pt-1">
