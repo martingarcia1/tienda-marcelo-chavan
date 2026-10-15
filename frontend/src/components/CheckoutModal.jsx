@@ -230,7 +230,7 @@ export default function CheckoutModal({ open, onClose, local }) {
       return
     }
     if (entrega === 'envio' && !confirmaZona) {
-      setError(`Confirmá que la dirección está ${ZONA_ENVIO}.`)
+      setError('Confirmá que tu dirección está dentro de la zona de envíos.')
       return
     }
     if (entrega === 'retiro' && !punto) {
@@ -419,6 +419,29 @@ export default function CheckoutModal({ open, onClose, local }) {
                   </div>
                 ) : (
                   <div className="mt-3 space-y-3 p-4" style={{ border: '1px solid var(--border-gold)' }}>
+                    <div className="p-3" style={{ backgroundColor: 'rgba(219,163,107,0.06)' }}>
+                      <p className="flex items-center gap-2 font-elegant text-sm" style={{ color: 'var(--navy)' }}>
+                        <Truck size={14} style={{ color: 'var(--gold)' }} /> Envíos en San Miguel de Tucumán
+                      </p>
+                      <p className="font-elegant text-xs mt-2" style={{ color: 'var(--navy-dim)' }}>
+                        Realizamos envíos a domicilio dentro de la zona comprendida entre las siguientes avenidas:
+                      </p>
+                      <ul className="mt-2 space-y-1">
+                        {ZONA_ENVIO.limites.map((l) => (
+                          <li key={l.lado} className="font-elegant text-xs" style={{ color: 'var(--navy-dim)' }}>
+                            <strong style={{ color: 'var(--navy)', fontWeight: 500 }}>{l.lado}:</strong> {l.avenidas}.
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="font-elegant text-xs mt-2" style={{ color: 'var(--navy-dim)' }}>{ZONA_ENVIO.nota}</p>
+                      <p className="font-elegant text-xs mt-2" style={{ color: 'var(--navy-dim)' }}>
+                        Si tu dirección está fuera de esta zona,{' '}
+                        <a href={whatsappHref(`Hola! Quiero comprar en ${local.nombre} y mi dirección está fuera de la zona de envíos. ¿Qué opciones de entrega tienen?`)} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--gold)' }}>
+                          consultanos por WhatsApp
+                        </a>{' '}
+                        para coordinar otras opciones de entrega.
+                      </p>
+                    </div>
                     <div>
                       <label className="block font-elegant mb-1.5 text-xs" style={{ color: 'var(--navy-dim)' }}>Calle y número</label>
                       <input type="text" value={direccion.calle} onChange={(e) => setDireccion((d) => ({ ...d, calle: e.target.value }))} placeholder="Ej: San Martín 850" className="w-full px-3 py-2.5 font-elegant text-sm" style={inputStyle} />
@@ -435,7 +458,7 @@ export default function CheckoutModal({ open, onClose, local }) {
                     </div>
                     <label className="flex items-start gap-2 font-elegant text-xs cursor-pointer" style={{ color: 'var(--navy-dim)' }}>
                       <input type="checkbox" checked={confirmaZona} onChange={(e) => setConfirmaZona(e.target.checked)} className="mt-0.5" />
-                      <span>Confirmo que la dirección está {ZONA_ENVIO}. Fuera de esa zona no hacemos envíos: elegí retiro en el local.</span>
+                      <span>Confirmo que mi dirección está dentro de la zona de envíos.</span>
                     </label>
                   </div>
                 )}

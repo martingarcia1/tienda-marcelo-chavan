@@ -51,9 +51,9 @@ const FORMAS_LOCAL = ['efectivo_local', 'transferencia_local']
 // En los locales de la v2 se paga online o en efectivo al retirar.
 const FORMAS_LOCAL_V2 = ['efectivo_local']
 
-// Envío a domicilio: costo fijo, solo dentro de las 6 avenidas del centro de
-// San Miguel de Tucumán — Sarmiento, Roca, Avellaneda, Sáenz Peña, Alem y
-// Mitre (el cliente lo confirma al comprar).
+// Envío a domicilio: costo fijo, solo dentro de la zona entre Av. Belgrano y
+// Av. Sarmiento (N), Av. Roca (S), Av. Soldati y Av. Brígido Terán (E) y
+// Camino del Perú (O) — el cliente lo confirma al comprar.
 const COSTO_ENVIO = 10000
 
 // Puntos de retiro de cada local (mismos ids que frontend/src/lib/locales.js).
