@@ -12,7 +12,7 @@ const enter = (delay, y = 30) => ({
 
 export default function Hero() {
   return (
-    <section id="inicio" className="relative min-h-[100svh] flex flex-col overflow-hidden grain" style={{ backgroundColor: '#140f0c' }}>
+    <section id="inicio" className="theme-dark relative min-h-[100svh] flex flex-col overflow-hidden grain" style={{ backgroundColor: '#140f0c' }}>
       {/* Luz cobriza de fondo */}
       <div className="absolute pointer-events-none" style={{ top: '12%', right: '6%', width: '34rem', height: '34rem', borderRadius: '50%', background: 'radial-gradient(circle, rgba(224,160,106,0.22) 0%, transparent 65%)', filter: 'blur(30px)' }} />
       <div className="absolute pointer-events-none" style={{ bottom: '-10%', left: '-8%', width: '30rem', height: '30rem', borderRadius: '50%', background: 'radial-gradient(circle, rgba(168,95,49,0.18) 0%, transparent 65%)', filter: 'blur(40px)' }} />
@@ -54,7 +54,7 @@ export default function Hero() {
             <Link
               to="/#espacios"
               className="px-8 py-4 font-sans transition-all duration-300 hover:shadow-[0_0_40px_rgba(224,160,106,0.35)]"
-              style={{ fontSize: '0.62rem', letterSpacing: '0.32em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--ink)', fontWeight: 500 }}
+              style={{ fontSize: '0.62rem', letterSpacing: '0.32em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--on-copper)', fontWeight: 500 }}
             >
               Conocé nuestros espacios
             </Link>

@@ -40,7 +40,7 @@ export default function ProductCard({ product, local, delay = 0 }) {
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'linear-gradient(to top, rgba(12,10,8,0.65), transparent 55%)' }} />
 
           {product.onSale && (
-            <span className="absolute top-3 left-3 px-2.5 py-1 font-sans" style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--ink)' }}>
+            <span className="absolute top-3 left-3 px-2.5 py-1 font-sans" style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--on-copper)' }}>
               {product.offerLabel}
             </span>
           )}
@@ -51,7 +51,7 @@ export default function ProductCard({ product, local, delay = 0 }) {
             style={{
               fontSize: '0.58rem', letterSpacing: '0.28em', textTransform: 'uppercase',
               backgroundColor: added ? 'var(--copper)' : 'rgba(12,10,8,0.82)',
-              color: added ? 'var(--ink)' : 'var(--ivory)',
+              color: added ? 'var(--on-copper)' : '#efe6da',
               border: '1px solid var(--line-strong)',
               backdropFilter: 'blur(6px)',
             }}

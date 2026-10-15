@@ -3,6 +3,7 @@ import { Link, useLocation, useMatch } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X, ShoppingBag, ChevronDown } from 'lucide-react'
 import Monogram from './Monogram'
+import ThemeToggle from './ThemeToggle'
 import { LOCALES, getLocal } from '../lib/locales'
 import { useCartStore, cartCount } from '../store/cartStore'
 import { useCatalog } from '../lib/hooks'
@@ -23,7 +24,7 @@ function CartButton({ localSlug }) {
       {count > 0 && (
         <span
           className="absolute -top-0.5 -right-0.5 flex items-center justify-center font-sans"
-          style={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: 'var(--copper)', color: 'var(--ink)', fontSize: '0.55rem', fontWeight: 500 }}
+          style={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: 'var(--copper)', color: 'var(--on-copper)', fontSize: '0.55rem', fontWeight: 500 }}
         >
           {count}
         </span>
@@ -57,9 +58,9 @@ export default function Navbar() {
 
   return (
     <header
-      className="fixed top-0 inset-x-0 z-50 transition-all duration-500"
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${solid ? '' : 'theme-dark'}`}
       style={{
-        backgroundColor: solid ? 'rgba(12,10,8,0.86)' : 'transparent',
+        backgroundColor: solid ? 'var(--header-bg)' : 'transparent',
         backdropFilter: solid ? 'blur(14px)' : 'none',
         borderBottom: `1px solid ${solid ? 'var(--line)' : 'transparent'}`,
       }}
@@ -104,6 +105,8 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           </nav>
+
+          <ThemeToggle />
 
           {local?.modo === 'online' && <CartButton localSlug={local.slug} />}
 

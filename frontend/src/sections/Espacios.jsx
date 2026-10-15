@@ -9,7 +9,7 @@ import { withModo } from '../lib/catalog'
 function EspacioCard({ local, cover, count, delay }) {
   return (
     <Reveal delay={delay} className="flex flex-col">
-      <Link to={`/espacios/${local.slug}`} className="group relative block overflow-hidden" style={{ aspectRatio: '3/4', backgroundColor: 'var(--ink-3)' }}>
+      <Link to={`/espacios/${local.slug}`} className="theme-dark group relative block overflow-hidden" style={{ aspectRatio: '3/4', backgroundColor: 'var(--ink-3)' }}>
         {cover && (
           <img src={cover} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.6s] ease-out group-hover:scale-[1.07]" style={{ filter: 'brightness(0.62) saturate(0.85)' }} />
         )}
@@ -28,7 +28,7 @@ function EspacioCard({ local, cover, count, delay }) {
             </p>
             <div className="flex items-center justify-between mt-7 pt-5" style={{ borderTop: '1px solid var(--line)' }}>
               <span className="font-sans" style={{ fontSize: '0.58rem', letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--ivory-xdim)' }}>
-                {local.modo === 'vidriera' ? 'Vidriera virtual' : 'Compra online'}{count > 0 ? ` · ${count} piezas` : ''}
+                {local.modo === 'vidriera' ? 'Vidriera virtual' : 'Compra online'}{count > 0 ? ` · ${count} ${count === 1 ? 'pieza' : 'piezas'}` : ''}
               </span>
               <span className="flex items-center gap-2 font-sans transition-all duration-500 group-hover:gap-3" style={{ fontSize: '0.6rem', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--copper)' }}>
                 Entrar <ArrowRight size={13} />

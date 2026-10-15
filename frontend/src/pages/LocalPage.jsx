@@ -39,7 +39,7 @@ function LocalPage({ slug }) {
   return (
     <>
       {/* ── Portada del local ── */}
-      <section className="relative min-h-[88svh] flex items-end overflow-hidden grain" style={{ backgroundColor: 'var(--ink)' }}>
+      <section className="theme-dark relative min-h-[88svh] flex items-end overflow-hidden grain" style={{ backgroundColor: 'var(--ink)' }}>
         {cover && (
           <motion.img
             key={cover}
@@ -81,7 +81,7 @@ function LocalPage({ slug }) {
             <a
               href="#vidriera"
               className="flex items-center gap-2.5 px-8 py-4 font-sans transition-all duration-300 hover:shadow-[0_0_40px_rgba(224,160,106,0.35)]"
-              style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--ink)', fontWeight: 500 }}
+              style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--on-copper)', fontWeight: 500 }}
             >
               Ver la vidriera <ArrowDown size={13} />
             </a>
@@ -158,7 +158,7 @@ function LocalPage({ slug }) {
                 Piezas de <em className="text-copper-shimmer">{local.nombre}</em>
               </h2>
             </div>
-            <div className="flex items-start gap-3 max-w-sm p-4" style={{ border: '1px solid var(--line)', backgroundColor: 'rgba(12,10,8,0.4)' }}>
+            <div className="flex items-start gap-3 max-w-sm p-4" style={{ border: '1px solid var(--line)', backgroundColor: 'var(--ink)' }}>
               {local.modo === 'online' ? (
                 <>
                   <ShoppingBag size={16} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
@@ -201,7 +201,7 @@ function LocalPage({ slug }) {
                         style={{
                           fontSize: '0.58rem', letterSpacing: '0.26em', textTransform: 'uppercase',
                           backgroundColor: active ? 'var(--copper)' : 'transparent',
-                          color: active ? 'var(--ink)' : 'var(--ivory-dim)',
+                          color: active ? 'var(--on-copper)' : 'var(--ivory-dim)',
                           border: `1px solid ${active ? 'var(--copper)' : 'var(--line)'}`,
                         }}
                       >

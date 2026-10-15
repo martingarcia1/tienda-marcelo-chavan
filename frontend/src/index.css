@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
-/* ── Lujo oscuro: negro cálido + cobre, tomado del cartel real del local ── */
+/* ── Temas ────────────────────────────────────────────────────────────────
+   Oscuro (por defecto): negro cálido + cobre, tomado del cartel real.
+   Claro: marfil + cobre profundo. Se elige con data-theme en <html>.
+   Nombres: --ink* = fondos, --ivory* = texto (en el claro se invierten).
+   .theme-dark fuerza el oscuro en una zona (hero, portadas con foto). */
 @layer base {
-  :root {
+  :root,
+  .theme-dark {
     --ink:          #0c0a08;
     --ink-2:        #13100d;
     --ink-3:        #1b1713;
@@ -16,13 +21,65 @@
     --copper-soft:  #e0a06a;
     --copper-deep:  #a85f31;
     --copper-glow:  rgba(224, 160, 106, 0.32);
+    --on-copper:    #0c0a08;
 
     --line:         rgba(219, 163, 107, 0.14);
     --line-strong:  rgba(219, 163, 107, 0.38);
 
     --sale:         #8fbfb4;
+    --overlay:      rgba(0, 0, 0, 0.62);
+    --header-bg:    rgba(12, 10, 8, 0.86);
+    --shadow:       rgba(0, 0, 0, 0.5);
 
     color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --ink:          #f6f1e9;
+    --ink-2:        #fffdf9;
+    --ink-3:        #eee6da;
+    --ink-4:        #e4d9c8;
+
+    --ivory:        #2a1d14;
+    --ivory-dim:    rgba(42, 29, 20, 0.7);
+    --ivory-xdim:   rgba(42, 29, 20, 0.46);
+
+    --copper:       #9c5d2c;
+    --copper-soft:  #b3703c;
+    --copper-deep:  #7a4320;
+    --copper-glow:  rgba(156, 93, 44, 0.22);
+    --on-copper:    #fffdf9;
+
+    --line:         rgba(156, 93, 44, 0.18);
+    --line-strong:  rgba(156, 93, 44, 0.42);
+
+    --sale:         #2c7566;
+    --overlay:      rgba(42, 29, 20, 0.45);
+    --header-bg:    rgba(246, 241, 233, 0.9);
+    --shadow:       rgba(42, 29, 20, 0.14);
+
+    color-scheme: light;
+  }
+
+  .theme-dark { color: var(--ivory); }
+
+  /* Alias de los nombres que usa el panel de administración, para que siga
+     el mismo tema sin reescribir cada pantalla. */
+  :root {
+    --bg:          var(--ink-2);
+    --bg-alt:      var(--ink);
+    --bg-sand:     var(--ink-3);
+    --bg-card:     var(--ink-2);
+    --navy:        var(--ivory);
+    --navy-dim:    var(--ivory-dim);
+    --navy-xdim:   var(--ivory-xdim);
+    --gold:        var(--copper);
+    --teal:        var(--sale);
+    --border:      var(--line);
+    --border-gold: var(--line-strong);
+  }
+
+  :root {
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -38,9 +95,10 @@
     color: var(--ivory);
     font-family: 'Cormorant Garamond', Georgia, serif;
     overflow-x: hidden;
+    transition: background-color 0.35s ease, color 0.35s ease;
   }
 
-  ::selection { background: var(--copper-deep); color: var(--ivory); }
+  ::selection { background: var(--copper-deep); color: #fffdf9; }
 
   img { max-width: 100%; display: block; }
 }
@@ -58,6 +116,7 @@
 @layer utilities {
   .font-serif   { font-family: 'Cormorant Garamond', Georgia, serif; }
   .font-sans    { font-family: 'Montserrat', Arial, sans-serif; }
+  .font-elegant { font-family: 'Montserrat', Arial, sans-serif; }
   .font-sign    { font-family: 'Cinzel', Georgia, serif; }
   .font-script  { font-family: 'Pinyon Script', cursive; }
 

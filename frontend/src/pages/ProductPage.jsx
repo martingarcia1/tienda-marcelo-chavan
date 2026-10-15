@@ -62,7 +62,7 @@ function ProductPage({ localSlug, productSlug }) {
             <div className="relative overflow-hidden" style={{ aspectRatio: '1/1', backgroundColor: 'var(--ink-3)' }}>
               {image && <img src={image} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />}
               {product.onSale && (
-                <span className="absolute top-4 left-4 px-3 py-1.5 font-sans" style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--ink)' }}>
+                <span className="absolute top-4 left-4 px-3 py-1.5 font-sans" style={{ fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--on-copper)' }}>
                   {product.offerLabel}
                 </span>
               )}
@@ -114,7 +114,7 @@ function ProductPage({ localSlug, productSlug }) {
                   <button
                     onClick={handleAdd}
                     className="flex-1 flex items-center justify-center gap-2.5 font-sans transition-all duration-300 hover:shadow-[0_0_40px_rgba(224,160,106,0.3)]"
-                    style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--ink)', fontWeight: 500 }}
+                    style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--on-copper)', fontWeight: 500 }}
                   >
                     {added ? <><Check size={14} /> Agregado</> : <><ShoppingBag size={14} /> Agregar a la compra</>}
                   </button>
@@ -129,7 +129,7 @@ function ProductPage({ localSlug, productSlug }) {
                   fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase',
                   ...(puedeComprar
                     ? { border: '1px solid var(--line-strong)', color: 'var(--ivory)' }
-                    : { backgroundColor: 'var(--copper)', color: 'var(--ink)', fontWeight: 500 }),
+                    : { backgroundColor: 'var(--copper)', color: 'var(--on-copper)', fontWeight: 500 }),
                 }}
               >
                 <WhatsAppIcon style={{ width: 15, height: 15 }} /> Consultar por WhatsApp

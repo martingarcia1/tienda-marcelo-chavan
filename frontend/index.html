@@ -8,6 +8,14 @@
       name="description"
       content="Marcelo Chavan — Joyería, relojería y platería fina desde 1957. Tres espacios en San Miguel de Tucumán: Sede Central, Peatonal Mendoza y Galería Áncel." />
     <title>Marcelo Chavan · Desde 1957</title>
+    <script>
+      try {
+        if (localStorage.getItem('mc-theme') === 'light') {
+          document.documentElement.dataset.theme = 'light'
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f6f1e9')
+        }
+      } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

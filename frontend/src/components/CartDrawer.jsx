@@ -24,7 +24,7 @@ function DemoCheckout({ local, items, total, done, onConfirm, onDone }) {
         <button
           onClick={onDone}
           className="mt-8 px-8 py-3.5 font-sans transition-opacity hover:opacity-85"
-          style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--ink)' }}
+          style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--on-copper)' }}
         >
           Cerrar
         </button>
@@ -49,7 +49,7 @@ function DemoCheckout({ local, items, total, done, onConfirm, onDone }) {
         type="submit"
         disabled={items.length === 0}
         className="w-full py-4 font-sans transition-opacity hover:opacity-85 disabled:opacity-40"
-        style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--ink)' }}
+        style={{ fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', backgroundColor: 'var(--copper)', color: 'var(--on-copper)' }}
       >
         Pagar (demostración)
       </button>
@@ -88,7 +88,7 @@ export default function CartDrawer() {
     <AnimatePresence>
       {local && (
         <motion.div className="fixed inset-0 z-[70] flex justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={handleClose} />
+          <div className="absolute inset-0" style={{ backgroundColor: 'var(--overlay)' }} onClick={handleClose} />
           <motion.aside
             className="relative h-full w-full max-w-md flex flex-col"
             style={{ backgroundColor: 'var(--ink-2)', borderLeft: '1px solid var(--line)' }}
