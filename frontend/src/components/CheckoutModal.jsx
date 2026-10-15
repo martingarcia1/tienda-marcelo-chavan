@@ -215,6 +215,15 @@ export default function CheckoutModal({ open, onClose, local }) {
     'San Miguel de Tucumán',
   ].filter(Boolean).join(' · ')
   const puntoElegido = puntos.find((p) => p.id === punto)
+  const mensajeFueraDeZona = [
+    `Hola! Quiero hacer una compra por la web en ${local.nombre}, pero mi dirección está fuera de la zona de envíos.`,
+    '',
+    'Productos:',
+    ...items.map((i) => `• ${i.qty}x ${i.name}`),
+    ...(direccion.calle.trim() ? ['', `Mi dirección: ${direccionTexto}`] : []),
+    '',
+    '¿Qué opciones de entrega tienen?',
+  ].join('\n')
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -436,7 +445,7 @@ export default function CheckoutModal({ open, onClose, local }) {
                       <p className="font-elegant text-xs mt-2" style={{ color: 'var(--navy-dim)' }}>{ZONA_ENVIO.nota}</p>
                       <p className="font-elegant text-xs mt-2" style={{ color: 'var(--navy-dim)' }}>
                         Si tu dirección está fuera de esta zona,{' '}
-                        <a href={whatsappHref(`Hola! Quiero comprar en ${local.nombre} y mi dirección está fuera de la zona de envíos. ¿Qué opciones de entrega tienen?`)} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--gold)' }}>
+                        <a href={whatsappHref(mensajeFueraDeZona)} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--gold)' }}>
                           consultanos por WhatsApp
                         </a>{' '}
                         para coordinar otras opciones de entrega.
