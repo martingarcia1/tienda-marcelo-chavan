@@ -6,7 +6,13 @@ import { corsHeaders } from '../_shared/cors.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const MP_ACCESS_TOKEN = Deno.env.get('MP_ACCESS_TOKEN')!
+// Credenciales por local: cada local cobra en su propia billetera. El secreto
+// lleva el sufijo del local (MP_ACCESS_TOKEN_PEATONAL_MENDOZA, …). Sin local
+// (sitio anterior) se usa el secreto sin sufijo.
+function credencial(base: string, localSlug: string | null): string {
+  if (!localSlug) return Deno.env.get(base) ?? ''
+  return Deno.env.get(`${base}_${localSlug.toUpperCase().replace(/-/g, '_')}`) ?? ''
+}
 // Mercado Pago siempre devuelve sandbox_init_point e init_point en la
 // preferencia, sin importar el tipo de credencial — no hay forma confiable
 // de distinguir "modo prueba" a partir de la respuesta. Por eso lo hacemos
@@ -19,15 +25,21 @@ const MP_SANDBOX = (Deno.env.get('MP_SANDBOX') ?? 'true') === 'true'
 const PAYMENT_PROVIDERS = (Deno.env.get('ENABLED_PAYMENT_PROVIDERS') ?? 'mercadopago')
   .split(',').map((p) => p.trim()).filter(Boolean)
 
-// Datos del local para Cybersource: el cliente retira en el local, así que
-// el "envío" es al propio comercio.
-const LOCAL = { street1: 'Muñecas 136', city: 'San Miguel de Tucuman', state: 'T', postal_code: '4000', country: 'AR' }
+// Dirección de cada local para Cybersource: el cliente retira en el local, así
+// que el "envío" es al propio comercio.
+const DIRECCIONES: Record<string, string> = {
+  'sede-central': 'Muñecas 136',
+  'peatonal-mendoza': 'Peatonal Mendoza 612',
+  'galeria-ancel-9': 'Muñecas 132',
+}
+function direccionLocal(localSlug: string | null) {
+  return { street1: DIRECCIONES[localSlug ?? ''] ?? 'Muñecas 136', city: 'San Miguel de Tucuman', state: 'T', postal_code: '4000', country: 'AR' }
+}
 
 // Campos MDD que Payway espera en el bloque de Cybersource (vertical retail).
 const CSMDDS = [...Array.from({ length: 18 }, (_, i) => 17 + i), ...Array.from({ length: 57 }, (_, i) => 43 + i)]
   .map((code) => ({ code, description: `Campo MDD${code}` }))
 
-const PAYWAY_PRIVATE_KEY = Deno.env.get('PAYWAY_PRIVATE_KEY') ?? ''
 const PAYWAY_API = (Deno.env.get('PAYWAY_SANDBOX') ?? 'true') === 'true'
   ? 'https://developers.decidir.com/api/v2'
   : 'https://ventasonline.payway.com.ar/api/v2'
@@ -35,7 +47,7 @@ const PAYWAY_API = (Deno.env.get('PAYWAY_SANDBOX') ?? 'true') === 'true'
 const DESCUENTO_EFECTIVO = 0.10
 // Política del local: 1 pago a precio de lista, 3 cuotas con 10% de recargo.
 const RECARGO_CUOTAS: Record<number, number> = { 1: 0, 3: 0.10 }
-const FORMAS_DE_PAGO = [...PAYMENT_PROVIDERS, 'efectivo_local', 'transferencia_local']
+const FORMAS_LOCAL = ['efectivo_local', 'transferencia_local']
 
 function jsonOk(data: unknown) {
   return new Response(JSON.stringify(data), {
@@ -86,7 +98,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { customer_name, customer_phone, customer_email, payment_method, items, coupon_code, dry_run, installments: cuotasPedidas, payway } = await req.json()
+    const { customer_name, customer_phone, customer_email, payment_method, items, coupon_code, dry_run, installments: cuotasPedidas, payway, local_slug } = await req.json()
 
     // dry_run: solo calcula totales (para mostrar el cupón aplicado en el checkout)
     // sin crear el pedido, así que no exige nombre/teléfono.
@@ -96,8 +108,28 @@ Deno.serve(async (req) => {
     if (!dry_run && (!customer_name?.trim() || !customer_phone?.trim())) {
       return jsonError('Faltan datos del pedido.', 400)
     }
-    if (!FORMAS_DE_PAGO.includes(payment_method)) {
+    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
+
+    // Local que vende: define qué formas de pago acepta, de quién tienen que
+    // ser las piezas y en qué billetera se cobra.
+    const localSlug: string | null = typeof local_slug === 'string' && local_slug ? local_slug : null
+    let local: { slug: string; owner_id: string | null; modo_compra: string; payment_provider: string | null } | null = null
+    if (localSlug) {
+      const { data } = await supabase.from('locales').select('slug, owner_id, modo_compra, payment_provider').eq('slug', localSlug).maybeSingle()
+      if (!data) return jsonError('Local inválido.', 400)
+      if (data.modo_compra !== 'online' || !data.payment_provider) {
+        return jsonError('Este local por ahora atiende solo por WhatsApp.', 400)
+      }
+      local = data
+    }
+    const formasDePago = local ? [local.payment_provider!, ...FORMAS_LOCAL] : [...PAYMENT_PROVIDERS, ...FORMAS_LOCAL]
+    if (!formasDePago.includes(payment_method)) {
       return jsonError('Forma de pago inválida.', 400)
+    }
+    const mpToken = credencial('MP_ACCESS_TOKEN', localSlug)
+    const paywayKey = credencial('PAYWAY_PRIVATE_KEY', localSlug)
+    if ((payment_method === 'mercadopago' && !mpToken) || (payment_method === 'payway' && !paywayKey)) {
+      return jsonError('Este local todavía no tiene configurada su billetera. Consultanos por WhatsApp.', 503)
     }
     const installments = payment_method === 'payway' ? Number(cuotasPedidas ?? 1) : 1
     if (!(installments in RECARGO_CUOTAS)) {
@@ -112,13 +144,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
-
     // Precios y stock reales — nunca los que mande el carrito del navegador.
     const productIds = items.map((i: { product_id: string }) => i.product_id)
     const { data: products, error: prodError } = await supabase
       .from('products')
-      .select('id, name, price, stock, active, discount_type, discount_value, discount_from, discount_until')
+      .select('id, name, price, stock, active, created_by, discount_type, discount_value, discount_from, discount_until')
       .in('id', productIds)
 
     if (prodError) return jsonError('No pudimos validar el carrito.', 500)
@@ -138,6 +168,9 @@ Deno.serve(async (req) => {
       const qty = Number(item.qty)
       if (!product || !product.active || !Number.isInteger(qty) || qty <= 0) {
         return jsonError('Uno de los productos del carrito ya no está disponible.', 400)
+      }
+      if (local && product.created_by !== local.owner_id) {
+        return jsonError(`"${product.name}" no pertenece a este local.`, 400)
       }
       if (product.stock < qty) {
         return jsonError(`No hay suficiente stock de "${product.name}".`, 400)
@@ -213,6 +246,7 @@ Deno.serve(async (req) => {
         coupon_discount: couponDiscount,
         installments,
         installments_surcharge: installmentsSurcharge,
+        local_slug: localSlug,
         total,
       })
       .select()
@@ -236,7 +270,7 @@ Deno.serve(async (req) => {
         first_name: firstName,
         last_name: rest.join(' ') || firstName,
         phone_number: customer_phone.replace(/\D/g, '').slice(-15),
-        ...LOCAL,
+        ...direccionLocal(localSlug),
       }
       // El recargo de cuotas y los descuentos se reparten en proporción entre
       // los ítems para que su suma coincida con el total cobrado.
@@ -269,7 +303,7 @@ Deno.serve(async (req) => {
 
       const paywayRes = await fetch(`${PAYWAY_API}/payments`, {
         method: 'POST',
-        headers: { apikey: PAYWAY_PRIVATE_KEY, 'Content-Type': 'application/json' },
+        headers: { apikey: paywayKey, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           site_transaction_id: order.id,
           token: payway.token,
@@ -325,15 +359,18 @@ Deno.serve(async (req) => {
           currency_id: 'ARS',
         }))
 
+    // El cliente vuelve a la página del local; el webhook recibe el local para
+    // verificar el pago con las credenciales de esa billetera.
+    const vuelta = localSlug ? `${origin}/espacios/${localSlug}` : `${origin}/`
     const preference: Record<string, unknown> = {
       items: mpItems,
       external_reference: order.id,
       back_urls: {
-        success: `${origin}/?pago=exito&pedido=${order.id}`,
-        failure: `${origin}/?pago=fallo&pedido=${order.id}`,
-        pending: `${origin}/?pago=pendiente&pedido=${order.id}`,
+        success: `${vuelta}?pago=exito&pedido=${order.id}`,
+        failure: `${vuelta}?pago=fallo&pedido=${order.id}`,
+        pending: `${vuelta}?pago=pendiente&pedido=${order.id}`,
       },
-      notification_url: `${SUPABASE_URL}/functions/v1/mp-webhook`,
+      notification_url: `${SUPABASE_URL}/functions/v1/mp-webhook${localSlug ? `?local=${localSlug}` : ''}`,
     }
 
     // Mercado Pago exige back_urls.success en https para usar auto_return.
@@ -346,7 +383,7 @@ Deno.serve(async (req) => {
     const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${mpToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(preference),

@@ -4,11 +4,19 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const MP_ACCESS_TOKEN = Deno.env.get('MP_ACCESS_TOKEN')!
+// Cada local cobra en su billetera: el aviso trae ?local=<slug> y el pago se
+// verifica con el token de ese local. Sin local, el token del sitio anterior.
+function tokenDe(localSlug: string | null): string {
+  if (!localSlug) return Deno.env.get('MP_ACCESS_TOKEN') ?? ''
+  return Deno.env.get(`MP_ACCESS_TOKEN_${localSlug.toUpperCase().replace(/-/g, '_')}`) ?? ''
+}
 
 Deno.serve(async (req) => {
   try {
     const url = new URL(req.url)
+    const localSlug = url.searchParams.get('local')
+    const MP_ACCESS_TOKEN = tokenDe(localSlug)
+    if (!MP_ACCESS_TOKEN) return new Response('ok', { status: 200 })
     let paymentId = url.searchParams.get('data.id') || url.searchParams.get('id')
     let topic = url.searchParams.get('type') || url.searchParams.get('topic')
 
@@ -35,8 +43,9 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
-    const { data: order } = await supabase.from('orders').select('id, status').eq('id', orderId).single()
-    if (!order) return new Response('ok', { status: 200 })
+    const { data: order } = await supabase.from('orders').select('id, status, local_slug').eq('id', orderId).single()
+    // El pedido tiene que ser del mismo local cuya billetera confirmó el pago.
+    if (!order || (order.local_slug ?? null) !== (localSlug ?? null)) return new Response('ok', { status: 200 })
 
     const newStatus =
       payment.status === 'approved' ? 'paid' :
