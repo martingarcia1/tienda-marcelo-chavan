@@ -67,7 +67,9 @@ export const LOCALES = [
 
 // Envío a domicilio: costo fijo (el servidor es el que lo cobra) y zona.
 export const COSTO_ENVIO = 10000
-export const ZONA_ENVIO = 'dentro del radio de las 6 avenidas principales de San Miguel de Tucumán'
+// Zona de envío: el centro de San Miguel de Tucumán, el rectángulo de 14 x 18
+// cuadras que forman las 6 avenidas.
+export const ZONA_ENVIO = 'dentro de las 6 avenidas del centro de San Miguel de Tucumán: Sarmiento (norte), Roca (sur), Avellaneda y Sáenz Peña (este), Alem y Mitre (oeste)'
 
 export function getLocal(slug) {
   return LOCALES.find((l) => l.slug === slug) || null
