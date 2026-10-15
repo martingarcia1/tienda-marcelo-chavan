@@ -9,7 +9,7 @@ import { currency } from '../lib/hooks'
 export default function ProductCard({ product, local, delay = 0 }) {
   const addItem = useCartStore((s) => s.addItem)
   const [added, setAdded] = useState(false)
-  const puedeComprar = local.modo === 'demo' && product.price > 0 && product.stock > 0
+  const puedeComprar = local.modo === 'online' && product.price > 0 && product.stock > 0
 
   function handleAction(e) {
     e.preventDefault()

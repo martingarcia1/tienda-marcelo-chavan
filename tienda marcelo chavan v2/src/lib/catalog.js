@@ -33,46 +33,66 @@ function mapProduct(p) {
   }
 }
 
-function descendantIds(categories, id) {
-  const ids = [id]
-  for (let i = 0; i < ids.length; i++) {
-    for (const c of categories) if (c.parent_id === ids[i]) ids.push(c.id)
+// Sección de la vidriera a la que pertenece un producto: su colección
+// principal (Plata, Alianzas…), salvo en Relojería, que se separa por marca.
+function seccionDe(categoryId, byId) {
+  const chain = []
+  let c = byId[categoryId]
+  while (c) {
+    chain.unshift(c)
+    c = c.parent_id ? byId[c.parent_id] : null
   }
-  return ids
+  if (chain.length === 0) return { slug: 'otros', label: 'Otros' }
+  const pick = chain[0].slug === 'relojeria' && chain[1] ? chain[1] : chain[0]
+  return { slug: pick.slug, label: pick.name }
 }
 
 async function loadCatalog() {
-  const [{ data: cats, error: catError }, { data: prods, error: prodError }] = await Promise.all([
-    supabase.from('categories').select('id, slug, name, parent_id').eq('active', true),
+  const [
+    { data: cats, error: catError },
+    { data: prods, error: prodError },
+    { data: locs, error: locError },
+  ] = await Promise.all([
+    supabase.from('categories').select('id, slug, name, parent_id, sort_order').eq('active', true),
     supabase
       .from('products')
-      .select('id, slug, name, price, stock, tag, description, category_id, product_images(storage_path, sort_order), discount_type, discount_value, discount_label, discount_from, discount_until')
+      .select('id, slug, name, price, stock, tag, description, category_id, created_by, product_images(storage_path, sort_order), discount_type, discount_value, discount_label, discount_from, discount_until')
       .eq('active', true)
       .order('name'),
+    supabase.from('locales').select('slug, owner_id, modo_compra'),
   ])
-  if (catError || prodError) throw new Error(catError?.message || prodError?.message)
+  if (catError || prodError || locError) throw new Error((catError || prodError || locError).message)
 
-  const products = prods.map(mapProduct)
-  const bySlug = Object.fromEntries(cats.map((c) => [c.slug, c]))
+  const byId = Object.fromEntries(cats.map((c) => [c.id, c]))
+  const products = prods.map((p) => ({ ...mapProduct(p), ownerId: p.created_by }))
 
-  // Vidriera de cada local: sus secciones (cada una con su rama completa).
+  // Vidriera de cada local: lo que cargó la cuenta de su dueño, agrupado en
+  // secciones según la categoría de cada pieza.
   const vidrieras = {}
   for (const local of LOCALES) {
-    const secciones = local.secciones
-      .map((s) => {
-        const cat = bySlug[s.slug]
-        if (!cat) return null
-        const ids = new Set(descendantIds(cats, cat.id))
-        return { ...s, products: products.filter((p) => ids.has(p.categoryId)) }
-      })
-      .filter((s) => s && s.products.length > 0)
+    const row = locs.find((l) => l.slug === local.slug)
+    const own = row?.owner_id ? products.filter((p) => p.ownerId === row.owner_id) : []
+    const map = new Map()
+    for (const p of own) {
+      const s = seccionDe(p.categoryId, byId)
+      if (!map.has(s.slug)) map.set(s.slug, { ...s, products: [] })
+      map.get(s.slug).products.push(p)
+    }
     vidrieras[local.slug] = {
-      secciones,
-      products: secciones.flatMap((s) => s.products),
+      modo: row?.modo_compra === 'online' ? 'online' : 'vidriera',
+      secciones: [...map.values()].sort((a, b) => b.products.length - a.products.length),
+      products: own,
     }
   }
 
   return { products, vidrieras }
+}
+
+// Contenido del local + su modo de venta real (de la base). Mientras el
+// catálogo carga, se asume vidriera (consulta por WhatsApp).
+export function withModo(local, catalog) {
+  if (!local) return null
+  return { ...local, modo: catalog?.vidrieras[local.slug]?.modo ?? 'vidriera' }
 }
 
 export function getCatalog() {

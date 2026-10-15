@@ -5,6 +5,8 @@ import { Menu, X, ShoppingBag, ChevronDown } from 'lucide-react'
 import Monogram from './Monogram'
 import { LOCALES, getLocal } from '../lib/locales'
 import { useCartStore, cartCount } from '../store/cartStore'
+import { useCatalog } from '../lib/hooks'
+import { withModo } from '../lib/catalog'
 
 function CartButton({ localSlug }) {
   const items = useCartStore((s) => s.carts[localSlug])
@@ -33,7 +35,8 @@ function CartButton({ localSlug }) {
 export default function Navbar() {
   const { pathname } = useLocation()
   const localMatch = useMatch('/espacios/:slug/*')
-  const local = localMatch ? getLocal(localMatch.params.slug) : null
+  const { catalog } = useCatalog()
+  const local = localMatch ? withModo(getLocal(localMatch.params.slug), catalog) : null
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [espaciosOpen, setEspaciosOpen] = useState(false)
@@ -102,7 +105,7 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {local?.modo === 'demo' && <CartButton localSlug={local.slug} />}
+          {local?.modo === 'online' && <CartButton localSlug={local.slug} />}
 
           <button className="md:hidden p-2" onClick={() => setMenuOpen((v) => !v)} aria-label="Menú" style={{ color: 'var(--ivory)' }}>
             {menuOpen ? <X size={20} strokeWidth={1.4} /> : <Menu size={20} strokeWidth={1.4} />}

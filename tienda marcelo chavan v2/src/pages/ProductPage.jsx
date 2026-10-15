@@ -6,6 +6,7 @@ import { WhatsAppIcon } from '../components/WhatsAppFloat'
 import { getLocal } from '../lib/locales'
 import { whatsappHref, mapsHref } from '../lib/whatsapp'
 import { useCatalog, useDocumentTitle, currency } from '../lib/hooks'
+import { withModo } from '../lib/catalog'
 import { useCartStore } from '../store/cartStore'
 import NotFoundPage from './NotFoundPage'
 
@@ -16,8 +17,8 @@ export default function ProductPageRoute() {
 }
 
 function ProductPage({ localSlug, productSlug }) {
-  const local = getLocal(localSlug)
   const { catalog, loading, error } = useCatalog()
+  const local = withModo(getLocal(localSlug), catalog)
   const addItem = useCartStore((s) => s.addItem)
   const openCart = useCartStore((s) => s.openCart)
   const [active, setActive] = useState(0)
@@ -36,7 +37,7 @@ function ProductPage({ localSlug, productSlug }) {
   const seccion = vidriera.secciones.find((s) => s.products.some((p) => p.id === product.id))
   const related = (seccion?.products || []).filter((p) => p.id !== product.id).slice(0, 4)
   const image = product.images[active] || product.img
-  const puedeComprar = local.modo === 'demo' && product.price > 0
+  const puedeComprar = local.modo === 'online' && product.price > 0
   const sinStock = product.stock <= 0
   const consulta = whatsappHref(`Hola! Quiero consultar por ${product.name} (${local.nombre}).\n${window.location.href}`)
 

@@ -8,6 +8,7 @@ import { WhatsAppIcon } from '../components/WhatsAppFloat'
 import { LOCALES, getLocal, nombresDuenos } from '../lib/locales'
 import { whatsappHref, mapsHref } from '../lib/whatsapp'
 import { useCatalog, useDocumentTitle } from '../lib/hooks'
+import { withModo } from '../lib/catalog'
 import NotFoundPage from './NotFoundPage'
 
 const ease = [0.22, 0.61, 0.36, 1]
@@ -23,8 +24,8 @@ export default function LocalPageRoute() {
 }
 
 function LocalPage({ slug }) {
-  const local = getLocal(slug)
   const { catalog, loading, error } = useCatalog()
+  const local = withModo(getLocal(slug), catalog)
   const [seccion, setSeccion] = useState(null)
   useDocumentTitle(local?.nombre)
 
@@ -158,7 +159,7 @@ function LocalPage({ slug }) {
               </h2>
             </div>
             <div className="flex items-start gap-3 max-w-sm p-4" style={{ border: '1px solid var(--line)', backgroundColor: 'rgba(12,10,8,0.4)' }}>
-              {local.modo === 'demo' ? (
+              {local.modo === 'online' ? (
                 <>
                   <ShoppingBag size={16} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
                   <p className="font-sans" style={{ fontSize: '0.72rem', lineHeight: 1.8, color: 'var(--ivory-dim)' }}>
