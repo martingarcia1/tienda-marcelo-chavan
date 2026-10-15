@@ -162,7 +162,7 @@ function LocalPage({ slug }) {
                 <>
                   <ShoppingBag size={16} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
                   <p className="font-sans" style={{ fontSize: '0.72rem', lineHeight: 1.8, color: 'var(--ivory-dim)' }}>
-                    <strong style={{ color: 'var(--ivory)', fontWeight: 500 }}>Compra online · demostración.</strong> Podés armar tu compra para ver cómo funcionaría; en esta versión no se cobra nada.
+                    <strong style={{ color: 'var(--ivory)', fontWeight: 500 }}>Compra online.</strong> {local.paymentProvider === 'payway' ? 'Pagá con tarjeta de crédito o débito, en 1 pago o 3 cuotas.' : 'Pagá con Mercado Pago: tarjetas, cuotas o dinero en cuenta.'} También podés retirar y pagar en el local.
                   </p>
                 </>
               ) : (

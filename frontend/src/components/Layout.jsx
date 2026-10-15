@@ -4,6 +4,7 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import WhatsAppFloat from './WhatsAppFloat'
 import CartDrawer from './CartDrawer'
+import PaymentResultModal from './PaymentResultModal'
 
 const HEADER_HEIGHT = 80
 
@@ -40,6 +41,7 @@ export default function Layout() {
       <Footer />
       <WhatsAppFloat />
       <CartDrawer />
+      <PaymentResultModal />
     </>
   )
 }

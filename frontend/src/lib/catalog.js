@@ -45,7 +45,7 @@ async function loadCatalog() {
       .select('id, slug, name, price, stock, tag, description, category_id, created_by, product_images(storage_path, sort_order), discount_type, discount_value, discount_label, discount_from, discount_until')
       .eq('active', true)
       .order('name'),
-    supabase.from('locales').select('slug, owner_id, modo_compra'),
+    supabase.from('locales').select('slug, owner_id, modo_compra, payment_provider'),
   ])
   if (catError || prodError || locError) throw new Error((catError || prodError || locError).message)
 
@@ -69,7 +69,8 @@ async function loadCatalog() {
   for (const local of LOCALES) {
     const row = locs.find((l) => l.slug === local.slug)
     vidrieras[local.slug] = {
-      modo: row?.modo_compra === 'online' ? 'online' : 'vidriera',
+      modo: row?.modo_compra === 'online' && row?.payment_provider ? 'online' : 'vidriera',
+      paymentProvider: row?.payment_provider ?? null,
       products: row?.owner_id ? products.filter((p) => p.ownerId === row.owner_id) : [],
     }
   }
@@ -121,7 +122,8 @@ export function categoryChain(catalog, categoryId) {
 // catálogo carga, se asume vidriera (consulta por WhatsApp).
 export function withModo(local, catalog) {
   if (!local) return null
-  return { ...local, modo: catalog?.vidrieras[local.slug]?.modo ?? 'vidriera' }
+  const v = catalog?.vidrieras[local.slug]
+  return { ...local, modo: v?.modo ?? 'vidriera', paymentProvider: v?.paymentProvider ?? null }
 }
 
 export function getCatalog() {
