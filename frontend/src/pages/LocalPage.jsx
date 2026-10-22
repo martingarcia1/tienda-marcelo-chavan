@@ -66,15 +66,17 @@ function LocalPage({ slug }) {
           <motion.span initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: 0.3, ease }} className="block font-serif italic" style={{ fontSize: 'clamp(4rem, 9vw, 7rem)', lineHeight: 0.9, color: 'var(--copper)' }}>
             {local.numero}
           </motion.span>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 1 }} className="eyebrow mt-6">{local.rubro}</motion.p>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 1 }} className="eyebrow mt-6" style={{ fontSize: '0.745rem' }}>{local.rubro}</motion.p>
           <div className="overflow-hidden mt-4">
             <motion.h1 initial={{ y: '110%' }} animate={{ y: 0 }} transition={{ duration: 1.2, delay: 0.5, ease }} className="font-serif font-light" style={{ fontSize: 'clamp(2.8rem, 7vw, 6rem)', lineHeight: 1, color: 'var(--ivory)' }}>
               {local.nombre}
             </motion.h1>
           </div>
-          <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 1, ease }} className="font-serif italic mt-5" style={{ fontSize: 'clamp(1.2rem, 2vw, 1.5rem)', color: 'var(--ivory-dim)' }}>
-            {nombresDuenos(local)}
-          </motion.p>
+          {!local.ocultarDuenosEnPortada && (
+            <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 1, ease }} className="font-serif italic mt-5" style={{ fontSize: 'clamp(1.2rem, 2vw, 1.5rem)', color: 'var(--ivory-dim)' }}>
+              {nombresDuenos(local)}
+            </motion.p>
+          )}
 
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 1, ease }} className="flex flex-wrap gap-4 mt-10">
             <a
@@ -116,7 +118,17 @@ function LocalPage({ slug }) {
             <p className="eyebrow">Quiénes lo atienden</p>
             <div className="copper-rule w-20 mt-5 mb-8" />
             <div className="space-y-4">
-              {local.duenos.map((d) => (
+              {local.duenos.map((d) => d.foto ? (
+                <figure key={d.nombre} style={{ backgroundColor: 'var(--ink-2)', border: '6px solid var(--line)' }}>
+                  <div className="overflow-hidden" style={{ aspectRatio: '2/3' }}>
+                    <img src={d.foto} alt={d.nombre} loading="lazy" className="w-full h-full object-cover" style={{ objectPosition: 'center 25%' }} />
+                  </div>
+                  <figcaption className="p-5">
+                    <p className="font-serif" style={{ fontSize: '1.35rem', color: 'var(--ivory)' }}>{d.nombre}</p>
+                    <p className="font-sans mt-1" style={{ fontSize: '0.66rem', letterSpacing: '0.12em', color: 'var(--ivory-xdim)' }}>{d.rol}</p>
+                  </figcaption>
+                </figure>
+              ) : (
                 <div key={d.nombre} className="flex items-center gap-5 p-5" style={{ backgroundColor: 'var(--ink-2)', border: '1px solid var(--line)' }}>
                   <div className="flex-shrink-0 flex items-center justify-center font-sign" style={{ width: 64, height: 64, borderRadius: '50%', border: '1px solid var(--line-strong)', color: 'var(--copper)', fontSize: '1.2rem', background: 'radial-gradient(circle at 30% 30%, rgba(224,160,106,0.14), transparent 70%)' }}>
                     {initials(d.nombre)}
@@ -129,15 +141,30 @@ function LocalPage({ slug }) {
               ))}
             </div>
 
+            {local.presentacion && (
+              <div className="mt-10">
+                <p className="font-serif font-light" style={{ fontSize: '1.4rem', lineHeight: 1.3, color: 'var(--ivory)' }}>{local.presentacion.titulo}</p>
+                <p className="font-sans mt-3" style={{ fontSize: '0.84rem', lineHeight: 1.95, color: 'var(--ivory-dim)', fontWeight: 300 }}>{local.presentacion.texto}</p>
+              </div>
+            )}
+
             <div className="mt-10 space-y-4 font-sans" style={{ fontSize: '0.78rem', color: 'var(--ivory-dim)' }}>
               <a href={mapsHref(local.mapsQuery)} target="_blank" rel="noopener noreferrer" className="flex gap-3 hover:text-[var(--copper)] transition-colors">
                 <MapPin size={15} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
                 <span>{local.direccion}<br /><span style={{ color: 'var(--ivory-xdim)' }}>{local.ciudad}</span></span>
               </a>
-              <p className="flex gap-3">
+              <div className="flex gap-3">
                 <Clock size={15} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
-                {local.horario}
-              </p>
+                {Array.isArray(local.horario) ? (
+                  <span>
+                    {local.horario.map((h) => (
+                      <span key={h.dias} className="block">{h.dias}<span style={{ color: 'var(--ivory-xdim)' }}> · {h.horas}</span></span>
+                    ))}
+                  </span>
+                ) : (
+                  <span>{local.horario}</span>
+                )}
+              </div>
               <a href={whatsappHref(`Hola! Quiero hacer una consulta para ${local.nombre}.`)} target="_blank" rel="noopener noreferrer" className="flex gap-3 hover:text-[var(--copper)] transition-colors">
                 <WhatsAppIcon style={{ width: 15, height: 15, color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
                 381 430 3839

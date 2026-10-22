@@ -1,4 +1,5 @@
 // Los tres espacios de Marcelo Chavan en Tucumán: contenido de cada página.
+// `horario` es un texto o una lista de { dias, horas } (una línea por fila).
 // Lo operativo (dueño y si vende online o a consulta) vive en la tabla
 // `locales` de Supabase: la vidriera de cada local muestra los productos
 // que carga la cuenta de su dueño. La historia es provisoria.
@@ -16,7 +17,10 @@ export const LOCALES = [
     direccion: 'Muñecas 136, Galería Áncel, Local 11',
     ciudad: 'San Miguel de Tucumán',
     mapsQuery: 'Joyería Marcelo Chavan, Muñecas 136, San Miguel de Tucumán',
-    horario: 'Lunes a sábados',
+    horario: [
+      { dias: 'Lunes a viernes', horas: '9:00 a 13:00 y 17:00 a 21:00' },
+      { dias: 'Sábados', horas: '9:00 a 13:00' }
+    ],
     historia: [
       'La Sede Central es el corazón de Marcelo Chavan: el espacio donde la tradición iniciada en 1957 sigue viva, pieza por pieza, en plena Galería Áncel.',
       'Aquí se reúnen la joyería de alta gama en oro 18K, las alianzas y la relojería suiza, con la atención personalizada que distingue a la casa desde siempre.',
@@ -36,7 +40,10 @@ export const LOCALES = [
     puntosRetiro: [
       { id: 'peatonal-mendoza', nombre: 'Peatonal Mendoza', direccion: 'Peatonal Mendoza 612, San Miguel de Tucumán' },
     ],
-    horario: 'Lunes a sábados',
+    horario: [
+      { dias: 'Lunes a viernes', horas: '9:00 a 13:00 y 17:30 a 21:00' },
+      { dias: 'Sábados', horas: '9:00 a 13:00' },
+    ],
     historia: [
       'Sobre la Peatonal Mendoza, en el pulso del centro tucumano, este espacio acerca la joyería de todos los días y la relojería japonesa a quien pasa y a quien vuelve.',
       'Relojes Citizen y Casio, abridores y piezas pensadas para regalar, con el mismo cuidado y la misma confianza de siempre.',
@@ -47,12 +54,17 @@ export const LOCALES = [
     numero: 'III',
     nombre: 'Galería Áncel 9',
     rubro: 'Platería fina',
+    ocultarDuenosEnPortada: true,
     duenos: [
-      { nombre: 'Marcela Siufi', rol: 'Al frente de Galería Áncel 9' },
+      { nombre: 'Marcela Siufi', rol: '', foto: '/duenos/marcela-siufi.png' },
     ],
-    direccion: 'Muñecas 132, Galería Áncel, Local 9',
+    direccion: 'Muñecas 136, Galería Áncel, Local 9',
     ciudad: 'San Miguel de Tucumán',
-    mapsQuery: 'Galería Áncel Local 9, Muñecas 132, San Miguel de Tucumán',
+    mapsQuery: 'Galería Áncel Local 9, Muñecas 136, San Miguel de Tucumán',
+    presentacion: {
+      titulo: 'Galería Áncel, Local 9 y Yerba Buena',
+      texto: 'Toda una línea de productos especializados en Platería Fina disponible en Muñecas 136, Galería Áncel, Local 9 y en Av. Aconquija 688, Local 7.',
+    },
     // Secciones principales que se muestran siempre, en este orden, aunque
     // todavía no tengan piezas (con 'Próximamente').
     seccionesDestacadas: ['plata-925', 'plata-925-dorada', 'acero', 'perlas'],
@@ -60,7 +72,10 @@ export const LOCALES = [
       { id: 'galeria-ancel-9', nombre: 'Galería Áncel, Local 9', direccion: 'Muñecas 132, San Miguel de Tucumán' },
       { id: 'yerba-buena', nombre: 'Yerba Buena', direccion: 'Av. Aconquija 688, Local 7, Yerba Buena' },
     ],
-    horario: 'Lunes a sábados',
+    horario: [
+      { dias: 'Lunes a viernes', horas: '9:00 a 13:00 y 17:00 a 21:00' },
+      { dias: 'Sábados', horas: '9:00 a 13:00' },
+    ],
     historia: [
       'Galería Áncel 9 es la casa de la platería fina de Marcelo Chavan: una línea dedicada por completo a la plata, con pulseras, pendientes, anillos y collares.',
       'Un espacio pensado para descubrir diseños con brillo propio y encontrar la pieza justa para cada historia.',
