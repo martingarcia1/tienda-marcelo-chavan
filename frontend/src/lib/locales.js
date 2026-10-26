@@ -52,7 +52,7 @@ export const LOCALES = [
   {
     slug: 'galeria-ancel-9',
     numero: 'III',
-    nombre: 'Galería Áncel 9',
+    nombre: 'Sede Platería Fina',
     rubro: 'Platería fina',
     ocultarDuenosEnPortada: true,
     duenos: [
