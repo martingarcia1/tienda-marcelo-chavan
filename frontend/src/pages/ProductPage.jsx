@@ -146,6 +146,12 @@ function ProductPage({ localSlug, productSlug }) {
               <MapPin size={15} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
               <span>Disponible en <strong style={{ color: 'var(--ivory)', fontWeight: 500 }}>{local.nombre}</strong><br />{local.direccion}</span>
             </a>
+            {(local.otrasDirecciones || []).map((d) => (
+              <a key={d.direccion} href={mapsHref(d.mapsQuery)} target="_blank" rel="noopener noreferrer" className="flex gap-3 mt-4 font-sans transition-colors hover:text-[var(--copper)]" style={{ fontSize: '0.74rem', color: 'var(--ivory-dim)' }}>
+                <MapPin size={15} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
+                <span>También en <strong style={{ color: 'var(--ivory)', fontWeight: 500 }}>{d.ciudad}</strong><br />{d.direccion}</span>
+              </a>
+            ))}
           </div>
         </div>
       </div>

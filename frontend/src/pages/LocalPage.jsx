@@ -153,6 +153,12 @@ function LocalPage({ slug }) {
                 <MapPin size={15} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
                 <span>{local.direccion}<br /><span style={{ color: 'var(--ivory-xdim)' }}>{local.ciudad}</span></span>
               </a>
+              {(local.otrasDirecciones || []).map((d) => (
+                <a key={d.direccion} href={mapsHref(d.mapsQuery)} target="_blank" rel="noopener noreferrer" className="flex gap-3 hover:text-[var(--copper)] transition-colors">
+                  <MapPin size={15} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
+                  <span>{d.direccion}<br /><span style={{ color: 'var(--ivory-xdim)' }}>{d.ciudad}</span></span>
+                </a>
+              ))}
               <div className="flex gap-3">
                 <Clock size={15} strokeWidth={1.4} style={{ color: 'var(--copper)', flexShrink: 0, marginTop: 2 }} />
                 {Array.isArray(local.horario) ? (

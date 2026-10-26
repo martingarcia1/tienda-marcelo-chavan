@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, Minus, Plus, ShoppingBag } from 'lucide-react'
+import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
 import { useCartStore, cartTotal } from '../store/cartStore'
 import { getLocal } from '../lib/locales'
 import { withModo } from '../lib/catalog'
@@ -61,10 +61,20 @@ export default function CartDrawer() {
                         <div className="flex-1 min-w-0">
                           <p className="font-serif leading-tight" style={{ fontSize: '1.05rem', color: 'var(--ivory)' }}>{it.name}</p>
                           <p className="font-sans text-xs mt-1" style={{ color: 'var(--ivory-dim)' }}>{currency.format(it.price)}</p>
-                          <div className="inline-flex items-center mt-2" style={{ border: '1px solid var(--line)' }}>
-                            <button onClick={() => updateQty(local.slug, it.id, it.qty - 1)} aria-label="Restar" className="p-1.5" style={{ color: 'var(--ivory)' }}><Minus size={12} /></button>
-                            <span className="w-8 text-center font-sans text-xs" style={{ color: 'var(--ivory)' }}>{it.qty}</span>
-                            <button onClick={() => updateQty(local.slug, it.id, it.qty + 1)} aria-label="Sumar" className="p-1.5" style={{ color: 'var(--ivory)' }}><Plus size={12} /></button>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="inline-flex items-center" style={{ border: '1px solid var(--line)' }}>
+                              <button onClick={() => updateQty(local.slug, it.id, it.qty - 1)} aria-label="Restar" className="p-1.5" style={{ color: 'var(--ivory)' }}><Minus size={12} /></button>
+                              <span className="w-8 text-center font-sans text-xs" style={{ color: 'var(--ivory)' }}>{it.qty}</span>
+                              <button onClick={() => updateQty(local.slug, it.id, it.qty + 1)} aria-label="Sumar" className="p-1.5" style={{ color: 'var(--ivory)' }}><Plus size={12} /></button>
+                            </div>
+                            <button
+                              onClick={() => updateQty(local.slug, it.id, 0)}
+                              aria-label={`Quitar ${it.name} del carrito`}
+                              className="flex items-center gap-1.5 p-1.5 font-sans transition-colors hover:text-[var(--copper)]"
+                              style={{ fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ivory-xdim)' }}
+                            >
+                              <Trash2 size={13} strokeWidth={1.5} /> Quitar
+                            </button>
                           </div>
                         </div>
                       </div>
