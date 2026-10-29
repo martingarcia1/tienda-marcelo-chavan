@@ -31,7 +31,7 @@ function LocalPage({ slug }) {
   if (!local) return <NotFoundPage />
 
   const vidriera = catalog?.vidrieras[local.slug]
-  const cover = vidriera?.products.find((p) => p.img)?.img
+  const cover = local.portada || vidriera?.products.find((p) => p.img)?.img
   const raices = catalog && local ? categoriesOfLocal(catalog, local.slug) : []
   const otros = LOCALES.filter((l) => l.slug !== local.slug)
 

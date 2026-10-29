@@ -72,7 +72,7 @@ export default function Espacios() {
         <div className="grid md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
           {LOCALES.map((l, i) => {
             const v = catalog?.vidrieras[l.slug]
-            return <EspacioCard key={l.slug} local={withModo(l, catalog)} cover={v?.products.find((p) => p.img)?.img} count={v?.products.length || 0} delay={i * 0.12} />
+            return <EspacioCard key={l.slug} local={withModo(l, catalog)} cover={l.portada || v?.products.find((p) => p.img)?.img} count={v?.products.length || 0} delay={i * 0.12} />
           })}
         </div>
       </div>

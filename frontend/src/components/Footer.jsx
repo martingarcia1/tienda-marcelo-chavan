@@ -6,7 +6,7 @@ import { whatsappHref, mapsHref } from '../lib/whatsapp'
 export default function Footer() {
   return (
     <footer className="relative grain" style={{ backgroundColor: 'var(--ink)', borderTop: '1px solid var(--line)' }}>
-      <div className="max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-28">
         <div className="grid md:grid-cols-12 gap-14 mb-16">
           <div className="md:col-span-4">
             <Monogram size={1.3} />
@@ -46,6 +46,14 @@ export default function Footer() {
         <div className="pt-8 flex flex-col md:flex-row justify-between gap-3 font-sans" style={{ borderTop: '1px solid var(--line)', fontSize: '0.62rem', letterSpacing: '0.18em', color: 'var(--ivory-xdim)' }}>
           <span>© {new Date().getFullYear()} MARCELO CHAVAN · TUCUMÁN, ARGENTINA</span>
           <span>FAMILIA SIUFI</span>
+          <a href="https://www.instagram.com/juda.solutions/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 transition-colors hover:text-[var(--copper)]">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+            </svg>
+            DESARROLLADO POR GARCIA SERGIO MARTIN
+          </a>
         </div>
       </div>
     </footer>

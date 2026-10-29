@@ -4,6 +4,11 @@
 // `locales` de Supabase: la vidriera de cada local muestra los productos
 // que carga la cuenta de su dueño. La historia es provisoria.
 
+import portadaPeatonal from '../assets/peatonal mendoza.jpeg'
+import portadaGaleria from '../assets/sede plateria fina.jpeg'
+
+// `portada`: foto de la fachada para la portada del local y su tarjeta en el
+// inicio. Si no tiene, se usa la primera foto de sus productos.
 export const LOCALES = [
   {
     slug: 'sede-central',
@@ -30,6 +35,7 @@ export const LOCALES = [
     slug: 'peatonal-mendoza',
     numero: 'II',
     nombre: 'Peatonal Mendoza',
+    portada: portadaPeatonal,
     rubro: 'Joyería general · Relojería japonesa',
     duenos: [
       { nombre: 'Esteban Siufi', rol: 'Al frente de Peatonal Mendoza' },
@@ -53,6 +59,7 @@ export const LOCALES = [
     slug: 'galeria-ancel-9',
     numero: 'III',
     nombre: 'Sede Platería Fina',
+    portada: portadaGaleria,
     rubro: 'Platería fina',
     ocultarDuenosEnPortada: true,
     duenos: [
