@@ -118,7 +118,16 @@ function LocalPage({ slug }) {
             <p className="eyebrow">Quiénes lo atienden</p>
             <div className="copper-rule w-20 mt-5 mb-8" />
             <div className="space-y-4">
-              {local.duenos.map((d) => d.foto ? (
+              {local.fotoDuenos ? (
+                <figure style={{ backgroundColor: 'var(--ink-2)', border: '6px solid var(--line)' }}>
+                  <div className="overflow-hidden" style={{ aspectRatio: '1/1' }}>
+                    <img src={local.fotoDuenos} alt={nombresDuenos(local)} loading="lazy" className="w-full h-full object-cover" />
+                  </div>
+                  <figcaption className="p-5">
+                    <p className="font-serif" style={{ fontSize: '1.35rem', color: 'var(--ivory)' }}>{nombresDuenos(local)}</p>
+                  </figcaption>
+                </figure>
+              ) : local.duenos.map((d) => d.foto ? (
                 <figure key={d.nombre} style={{ backgroundColor: 'var(--ink-2)', border: '6px solid var(--line)' }}>
                   <div className="overflow-hidden" style={{ aspectRatio: '2/3' }}>
                     <img src={d.foto} alt={d.nombre} loading="lazy" className="w-full h-full object-cover" style={{ objectPosition: 'center 25%' }} />

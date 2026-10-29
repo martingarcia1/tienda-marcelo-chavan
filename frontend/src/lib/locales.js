@@ -21,6 +21,8 @@ export const LOCALES = [
       { nombre: 'Miguel Siufi', rol: 'Al frente de la Sede Central' },
       { nombre: 'Ely Siufi', rol: 'Al frente de la Sede Central' },
     ],
+    // Una sola foto para todos los dueños (en lugar de una tarjeta por persona).
+    fotoDuenos: '/duenos/miguel-ely-siufi.jpg',
     direccion: 'Muñecas 136, Galería Áncel, Local 11',
     ciudad: 'San Miguel de Tucumán',
     mapsQuery: 'Joyería Marcelo Chavan, Muñecas 136, San Miguel de Tucumán',
