@@ -4,6 +4,7 @@
 // `locales` de Supabase: la vidriera de cada local muestra los productos
 // que carga la cuenta de su dueño. La historia es provisoria.
 
+import portadaCentral from '../assets/sede central.jpg'
 import portadaPeatonal from '../assets/peatonal mendoza.jpeg'
 import portadaGaleria from '../assets/sede plateria fina.jpeg'
 
@@ -14,6 +15,7 @@ export const LOCALES = [
     slug: 'sede-central',
     numero: 'I',
     nombre: 'Sede Central',
+    portada: portadaCentral,
     rubro: 'Joyería de alta gama · Relojería suiza',
     duenos: [
       { nombre: 'Miguel Siufi', rol: 'Al frente de la Sede Central' },
