@@ -12,3 +12,6 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+
+# Fotos originales de las sesiones (5+ GB): no van al repositorio.
+src/assets/fotos/
