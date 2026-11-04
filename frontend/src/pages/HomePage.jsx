@@ -1,4 +1,5 @@
 import Hero from '../sections/Hero'
+import Novedades from '../sections/Novedades'
 import Historia from '../sections/Historia'
 import Espacios from '../sections/Espacios'
 import PagosMarcas from '../sections/PagosMarcas'
@@ -9,6 +10,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <Novedades />
       <Historia />
       <Espacios />
       <PagosMarcas />

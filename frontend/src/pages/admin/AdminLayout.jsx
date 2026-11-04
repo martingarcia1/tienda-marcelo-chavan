@@ -1,5 +1,5 @@
 import { Link, Navigate, NavLink, Outlet } from 'react-router-dom'
-import { LogOut, Package, Tag, ClipboardList, LayoutDashboard, Ticket, ExternalLink } from 'lucide-react'
+import { LogOut, Package, Tag, ClipboardList, LayoutDashboard, Ticket, ExternalLink, Megaphone } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { useMyLocal } from '../../lib/myLocal'
 import Monogram from '../../components/Monogram'
@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { to: '/admin/productos', label: 'Productos', icon: Package },
   { to: '/admin/categorias', label: 'Categorías', icon: Tag },
   { to: '/admin/cupones', label: 'Cupones', icon: Ticket },
+  { to: '/admin/publicidad', label: 'Publicidad', icon: Megaphone },
 ]
 
 const linkStyle = ({ isActive }) => ({

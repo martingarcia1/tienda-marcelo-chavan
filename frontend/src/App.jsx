@@ -6,6 +6,7 @@ import LocalPage from './pages/LocalPage'
 import ProductPage from './pages/ProductPage'
 import LocalCategoryPage from './pages/LocalCategoryPage'
 import NotFoundPage from './pages/NotFoundPage'
+import NovedadesPage from './pages/NovedadesPage'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
@@ -13,6 +14,7 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage'
 import AdminProductsPage from './pages/admin/AdminProductsPage'
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage'
 import AdminCouponsPage from './pages/admin/AdminCouponsPage'
+import AdminPromocionesPage from './pages/admin/AdminPromocionesPage'
 import { useAuthStore } from './store/authStore'
 
 export default function App() {
@@ -24,6 +26,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/novedades" element={<NovedadesPage />} />
           <Route path="/espacios/:slug" element={<LocalPage />} />
           <Route path="/espacios/:slug/categoria/:catSlug" element={<LocalCategoryPage />} />
           <Route path="/espacios/:slug/producto/:productSlug" element={<ProductPage />} />
@@ -38,6 +41,7 @@ export default function App() {
           <Route path="productos" element={<AdminProductsPage />} />
           <Route path="categorias" element={<AdminCategoriesPage />} />
           <Route path="cupones" element={<AdminCouponsPage />} />
+          <Route path="publicidad" element={<AdminPromocionesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

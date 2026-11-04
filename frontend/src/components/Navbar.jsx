@@ -76,6 +76,7 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           <nav className="hidden md:flex items-center gap-9 font-sans">
             <Link to="/#historia" className="link-line" style={linkStyle}>Historia</Link>
+            <Link to="/novedades" className="link-line" style={linkStyle}>Novedades</Link>
             <div className="relative" onMouseEnter={() => setEspaciosOpen(true)} onMouseLeave={() => setEspaciosOpen(false)}>
               <Link to="/#espacios" className="link-line inline-flex items-center gap-1.5" style={linkStyle}>
                 Nuestros espacios <ChevronDown size={11} />
@@ -127,6 +128,7 @@ export default function Navbar() {
           >
             <Link to="/" className="font-serif" style={{ fontSize: '1.8rem', color: 'var(--ivory)' }}>Inicio</Link>
             <Link to="/#historia" className="font-serif" style={{ fontSize: '1.8rem', color: 'var(--ivory)' }}>Historia</Link>
+            <Link to="/novedades" className="font-serif" style={{ fontSize: '1.8rem', color: 'var(--ivory)' }}>Novedades</Link>
             <div>
               <p className="eyebrow mb-5">Nuestros espacios</p>
               <div className="flex flex-col gap-5">
