@@ -23,6 +23,11 @@ export const LOCALES = [
     ],
     // Una sola foto para todos los dueños (en lugar de una tarjeta por persona).
     fotoDuenos: '/duenos/miguel-ely-siufi.jpg',
+    // Secciones en orden alfabético y al final las colecciones.
+    seccionesDestacadas: [
+      'alianzas-clasicas', 'alianzas-especiales', 'anillos', 'anillos-de-compromiso', 'aros', 'cadenas',
+      'collares', 'conjuntos', 'dijes', 'gargantillas', 'pulseras', 'colecciones',
+    ],
     direccion: 'Muñecas 136, Galería Áncel, Local 11',
     ciudad: 'San Miguel de Tucumán',
     mapsQuery: 'Joyería Marcelo Chavan, Muñecas 136, San Miguel de Tucumán',
