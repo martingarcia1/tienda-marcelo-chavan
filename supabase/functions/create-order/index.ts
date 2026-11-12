@@ -3,6 +3,7 @@
 // preferencia de Checkout Pro y devuelve la URL de pago.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
+import { avisarPedido } from '../_shared/aviso-pedido.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -366,6 +367,7 @@ Deno.serve(async (req) => {
         for (const it of orderItems) {
           await supabase.rpc('decrementar_stock', { p_product_id: it.product_id, p_cantidad: it.quantity })
         }
+        await avisarPedido(supabase, order.id)
         return jsonOk({ orderId: order.id, status: 'approved', total })
       }
 
@@ -378,6 +380,8 @@ Deno.serve(async (req) => {
     }
 
     if (payment_method !== 'mercadopago') {
+      // Encargo para pagar en el local: ya es un pedido confirmado.
+      await avisarPedido(supabase, order.id)
       return jsonOk({ orderId: order.id, total })
     }
 

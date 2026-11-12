@@ -176,16 +176,13 @@ export default function AdminCouponsPage() {
     setLoading(true)
     const [{ data: cs, error: cErr }, { data: os }] = await Promise.all([
       supabase.from('coupons').select('*').order('created_at', { ascending: false }),
-      supabase.from('orders').select('coupon_code, coupon_discount').not('coupon_code', 'is', null).neq('status', 'cancelled'),
+      // Los cupones son compartidos: los usos se cuentan en todos los locales.
+      supabase.rpc('usos_cupones'),
     ])
     if (cErr) setError(cErr.message)
     else setCoupons(cs)
     const usos = {}
-    for (const o of os || []) {
-      if (!usos[o.coupon_code]) usos[o.coupon_code] = { count: 0, total: 0 }
-      usos[o.coupon_code].count += 1
-      usos[o.coupon_code].total += Number(o.coupon_discount)
-    }
+    for (const u of os || []) usos[u.coupon_code] = { count: Number(u.usos), total: Number(u.descontado) }
     setUsosPorCodigo(usos)
     setLoading(false)
   }

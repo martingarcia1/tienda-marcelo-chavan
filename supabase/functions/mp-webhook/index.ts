@@ -1,6 +1,7 @@
 // Recibe el aviso de Mercado Pago y confirma el pago consultando de nuevo su API
 // (nunca se confía en el contenido del aviso en sí, podría ser falsificado).
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { avisarPedido } from '../_shared/aviso-pedido.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -71,6 +72,7 @@ Deno.serve(async (req) => {
             p_cantidad: item.quantity,
           })
         }
+        await avisarPedido(supabase, order.id)
       }
     }
 

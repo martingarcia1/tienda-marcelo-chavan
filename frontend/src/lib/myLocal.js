@@ -27,8 +27,8 @@ export function useMyLocal() {
   return state
 }
 
-// Filtro de pedidos para el panel: los del local del admin más los pedidos
-// anteriores a la división por locales (sin local asignado).
+// Filtro de pedidos para el panel: solo los del local del admin. La base
+// aplica la misma regla (RLS); una cuenta de soporte, sin local, ve todos.
 export function filtrarPorLocal(query, local) {
-  return local ? query.or(`local_slug.eq.${local.slug},local_slug.is.null`) : query
+  return local ? query.eq('local_slug', local.slug) : query
 }
