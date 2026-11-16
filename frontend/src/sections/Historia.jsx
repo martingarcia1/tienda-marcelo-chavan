@@ -1,6 +1,6 @@
 import Reveal from '../components/Reveal'
 import retrato from '../assets/marcelo-chavan-retrato.avif'
-import familia from '../assets/photo-familia.png'
+import familia from '../assets/photo-familia.jpeg'
 
 const P = ({ children }) => (
   <p className="font-sans" style={{ fontSize: '0.86rem', lineHeight: 2.05, color: 'var(--ivory-dim)', fontWeight: 300 }}>{children}</p>
