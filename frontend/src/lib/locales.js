@@ -65,7 +65,7 @@ export const LOCALES = [
     ],
   },
   {
-    slug: 'galeria-ancel-9',
+    slug: 'San Martín 631',
     numero: 'III',
     nombre: 'Sede Platería Fina',
     portada: portadaGaleria,
@@ -74,16 +74,16 @@ export const LOCALES = [
     duenos: [
       { nombre: 'Marcela Siufi', rol: '', foto: '/duenos/marcela-siufi.jpg' },
     ],
-    direccion: 'Muñecas 136, Galería Áncel, Local 9',
+    direccion: 'San Martín 631',
     ciudad: 'San Miguel de Tucumán',
     // Otros puntos donde están las piezas del local (se muestran con la dirección principal).
     otrasDirecciones: [
       { direccion: 'Av. Aconquija 688, Local 7', ciudad: 'Yerba Buena', mapsQuery: 'Av. Aconquija 688, Yerba Buena, Tucumán' },
     ],
-    mapsQuery: 'Galería Áncel Local 9, Muñecas 136, San Miguel de Tucumán',
+    mapsQuery: 'San Martín 631, San Miguel de Tucumán',
     presentacion: {
       titulo: 'Galería Áncel, Local 9 y Yerba Buena',
-      texto: 'Toda una línea de productos especializados en Platería Fina disponible en Muñecas 136, Galería Áncel, Local 9 y en Av. Aconquija 688, Local 7.',
+      texto: 'Toda una línea de productos especializados en Platería Fina disponible en San Martín 631 y en Av. Aconquija 688, Local 7.',
     },
     // Secciones principales que se muestran siempre, en este orden, aunque
     // todavía no tengan piezas (con 'Próximamente').
