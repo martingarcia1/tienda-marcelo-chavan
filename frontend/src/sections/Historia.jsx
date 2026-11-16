@@ -6,14 +6,15 @@ const P = ({ children }) => (
   <p className="font-sans" style={{ fontSize: '0.86rem', lineHeight: 2.05, color: 'var(--ivory-dim)', fontWeight: 300 }}>{children}</p>
 )
 
-function FramedPhoto({ src, alt, caption, sub, align = 'left' }) {
+// ratio/position: proporción y encuadre del recorte (vertical por defecto).
+function FramedPhoto({ src, alt, caption, sub, align = 'left', ratio = '4/5', position = 'center top' }) {
   return (
     <div className="relative">
       <div
         className="absolute pointer-events-none"
         style={{ inset: align === 'left' ? '-18px 18px 18px -18px' : '18px -18px -18px 18px', border: '1px solid var(--line-strong)' }}
       />
-      <img src={src} alt={alt} className="relative w-full object-cover" style={{ aspectRatio: '4/5', objectPosition: 'center top', filter: 'saturate(0.9) contrast(1.03)', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }} />
+      <img src={src} alt={alt} className="relative w-full object-cover" style={{ aspectRatio: ratio, objectPosition: position, filter: 'saturate(0.9) contrast(1.03)', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }} />
       <div
         className={`absolute -bottom-6 ${align === 'left' ? 'right-6 text-right' : 'left-6'} px-6 py-4`}
         style={{ backgroundColor: 'var(--ink-2)', border: '1px solid var(--line)', [align === 'left' ? 'borderRight' : 'borderLeft']: '2px solid var(--copper)' }}
@@ -97,7 +98,7 @@ export default function Historia() {
             </Reveal>
           </div>
           <Reveal className="md:col-span-6 lg:col-start-7 order-1 md:order-2">
-            <FramedPhoto src={familia} alt="Familia Siufi" caption="La familia Siufi" sub="Tucumán, Argentina" align="right" />
+            <FramedPhoto src={familia} alt="Familia Siufi" caption="La familia Siufi" sub="Tucumán, Argentina" align="right" ratio="4/3" position="center" />
           </Reveal>
         </div>
       </div>
