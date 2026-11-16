@@ -65,7 +65,9 @@ export const LOCALES = [
     ],
   },
   {
-    slug: 'San Martín 631',
+    // El slug es el identificador del local en la base de datos y en la URL:
+    // no cambia aunque el local se mude (la dirección va en 'direccion').
+    slug: 'galeria-ancel-9',
     numero: 'III',
     nombre: 'Sede Platería Fina',
     portada: portadaGaleria,
@@ -82,14 +84,14 @@ export const LOCALES = [
     ],
     mapsQuery: 'San Martín 631, San Miguel de Tucumán',
     presentacion: {
-      titulo: 'Galería Áncel, Local 9 y Yerba Buena',
+      titulo: 'San Martín 631 y Yerba Buena',
       texto: 'Toda una línea de productos especializados en Platería Fina disponible en San Martín 631 y en Av. Aconquija 688, Local 7.',
     },
     // Secciones principales que se muestran siempre, en este orden, aunque
     // todavía no tengan piezas (con 'Próximamente').
     seccionesDestacadas: ['plata-925', 'plata-925-dorada', 'acero', 'perlas'],
     puntosRetiro: [
-      { id: 'galeria-ancel-9', nombre: 'Galería Áncel, Local 9', direccion: 'Muñecas 132, San Miguel de Tucumán' },
+      { id: 'galeria-ancel-9', nombre: 'Local San Martín', direccion: 'San Martín 631, San Miguel de Tucumán' },
       { id: 'yerba-buena', nombre: 'Yerba Buena', direccion: 'Av. Aconquija 688, Local 7, Yerba Buena' },
     ],
     horario: [
@@ -97,7 +99,7 @@ export const LOCALES = [
       { dias: 'Sábados', horas: '9:00 a 13:00' },
     ],
     historia: [
-      'Galería Áncel 9 es la casa de la platería fina de Marcelo Chavan: una línea dedicada por completo a la plata, con pulseras, pendientes, anillos y collares.',
+      'Sede Platería Fina es la casa de la platería fina de Marcelo Chavan: una línea dedicada por completo a la plata, con pulseras, pendientes, anillos y collares.',
       'Un espacio pensado para descubrir diseños con brillo propio y encontrar la pieza justa para cada historia.',
     ],
   },

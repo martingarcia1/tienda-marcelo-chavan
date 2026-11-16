@@ -31,7 +31,7 @@ const PAYMENT_PROVIDERS = (Deno.env.get('ENABLED_PAYMENT_PROVIDERS') ?? 'mercado
 const DIRECCIONES: Record<string, string> = {
   'sede-central': 'Muñecas 136',
   'peatonal-mendoza': 'Peatonal Mendoza 612',
-  'galeria-ancel-9': 'Muñecas 132',
+  'galeria-ancel-9': 'San Martin 631',
 }
 function direccionLocal(localSlug: string | null) {
   return { street1: DIRECCIONES[localSlug ?? ''] ?? 'Muñecas 136', city: 'San Miguel de Tucuman', state: 'T', postal_code: '4000', country: 'AR' }
@@ -60,7 +60,7 @@ const COSTO_ENVIO = 10000
 // Puntos de retiro de cada local (mismos ids que frontend/src/lib/locales.js).
 const PUNTOS_RETIRO: Record<string, Record<string, string>> = {
   'galeria-ancel-9': {
-    'galeria-ancel-9': 'Galería Áncel, Local 9 — Muñecas 132, San Miguel de Tucumán',
+    'galeria-ancel-9': 'Local San Martín — San Martín 631, San Miguel de Tucumán',
     'yerba-buena': 'Av. Aconquija 688, Local 7 — Yerba Buena',
   },
   'peatonal-mendoza': {
